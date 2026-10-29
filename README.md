@@ -186,6 +186,17 @@ Portado con tests de comportamiento equivalentes a los casos de `Tests\issues\`:
 
 ### Fase 4 (Settings + MRU + línea de comandos + validación XML, validada)
 
+- **Bugfix scrollbars al encoger la ventana**: el `Canvas` (no-redimensionable)
+  reportaba como mínimo su tamaño actual, así que al ENCOGER la ventana el
+  `canvasHolder` no reducía su tamaño, no disparaba los listeners de
+  `canvasHolder.width/height` y `layoutScrollBars()` nunca se re-ejecutaba →
+  las scrollbars desaparecían aunque el diagrama ya no cupiera (el contenido
+  quedaba cortado). Fix: `canvasHolder.minWidth/minHeight = 0`. Prueba con
+  `cfdv40.xsd`: ventana 1040×807 → 525×400 y las scrollbars se re-dimensionan
+  correctamente (`h.max=707`, `v.max=571` con virtual 939×795 y client
+  232×224). Capturas: `../screenshots/25-scrollbars-shrink.png` (bug) y
+  `26-scrollbars-fixed.png` / `26b-vscroll-zoom.png` (fix).
+
 - **Persistencia con `java.util.prefs`**: los Settings del C# (`user.config`)
   y el MRU (registro `HKCU\Software\xsddiagram\MRU`) viven ahora en los nodos
   Preferences `xsddiagram/settings` y `xsddiagram/MRU`, con el mismo esquema

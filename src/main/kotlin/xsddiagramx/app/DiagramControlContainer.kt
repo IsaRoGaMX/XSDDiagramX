@@ -111,6 +111,15 @@ class DiagramControlContainer : BorderPane() {
         canvasHolder.widthProperty().addListener { _, _, _ -> layoutScrollBars() }
         canvasHolder.heightProperty().addListener { _, _, _ -> layoutScrollBars() }
 
+        // BUGFIX: el Canvas no es redimensionable y su mínimo = su tamaño
+        // actual (747x631 al arrancar), así que al ENCGER la ventana el
+        // StackPane no encogía (mínimo "pegado"), no disparaba los listeners
+        // y las scrollbars dejaban de recalcular (desaparecían aunque el
+        // diagrama ya no cupiera). Mínimos a 0: el holder puede encoger
+        // libremente y los listeners disparan el re-layout de las barras.
+        canvasHolder.minWidth = 0.0
+        canvasHolder.minHeight = 0.0
+
         // ≈ vScrollBar_ValueChanged / hScrollBar_ValueChanged
         vScrollBar.valueProperty().addListener { _, _, _ -> scrollbars_ValueChanged() }
         hScrollBar.valueProperty().addListener { _, _, _ -> scrollbars_ValueChanged() }
