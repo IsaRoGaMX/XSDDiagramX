@@ -43,7 +43,7 @@ JavaFX de Maven Central; no se usa ningún plugin de terceros.
 
 ```
 PROYECTO ORIGINAL (C#)                      ESTE PORT (Kotlin)
-xsddiagram-master\                          XSDDiagramX\
+xsddiagram-master\                          
 ├── XSDDiagrams\ (núcleo, LGPL/MS-PL)       \src\main\kotlin\xsddiagram\
 │   ├── Parsing\XmlSchema.cs  <- xsd.exe    │   ├── parsing\XmlSchema.kt       (modelo de datos)
 │   │       (XmlSerializer)                 │   ├── parsing\XmlSchemaReader.kt (parser DOM del JDK)
