@@ -1,0 +1,17 @@
+# === Build / Gradle (Kotlin + JavaFX) ===
+build/
+.gradle/
+.kotlin/
+
+# === IDEs ===
+.idea/
+*.iml
+.vscode/
+
+# === Sistema operativo ===
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# === Archivos locales de trabajo (no parte del código) ===
+*.log

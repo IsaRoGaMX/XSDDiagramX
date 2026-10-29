@@ -1,0 +1,31 @@
+/* Scrollbars del diagrama: las de Modena por defecto son casi invisibles
+   (track casi blanco, thumb gris pálido) sobre el lienzo del diagrama.
+   Clase "diagram-scrollbar" aplicada en DiagramControlContainer. */
+.diagram-scrollbar .track {
+    -fx-background-color: #d9d9d9;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+.diagram-scrollbar .thumb {
+    -fx-background-color: #6e6e6e;
+    -fx-background-insets: 2;
+    -fx-background-radius: 3;
+}
+
+.diagram-scrollbar .thumb:hover,
+.diagram-scrollbar .thumb:pressed {
+    -fx-background-color: #4f4f4f;
+}
+
+.diagram-scrollbar .decrement-button,
+.diagram-scrollbar .increment-button {
+    -fx-background-color: #bcbcbc;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+.diagram-scrollbar .decrement-arrow,
+.diagram-scrollbar .increment-arrow {
+    -fx-background-color: #2b2b2b;
+}
