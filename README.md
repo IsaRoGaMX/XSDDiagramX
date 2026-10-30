@@ -1,43 +1,66 @@
 # XSDDiagramX — Port Kotlin/JavaFX de XSD Diagram (fases 1-4: dominio + GUI + exportación/impresión + Settings/MRU/CLI/validación)
 
+> Attribution notice: Este repositorio es un port derivado del proyecto original
+> [XSD Diagram](https://github.com/dgis/xsddiagram), desarrollado por
+> **Regis Cosnier** y otros contribuidores del proyecto original.
+> El código original está licenciado bajo **GPL / LGPL / MS-PL** según indican
+> los archivos de licencia de ese proyecto y su `ReadMe.txt`.
+> Este repositorio no reemplaza ni elimina la autoría original.
+>
+> Este port se publica con atribución clara al proyecto fuente y se recomienda
+> mantener su licencia compatible para evitar conflictos legales.
+>
+> Repositorio original: https://github.com/dgis/xsddiagram
+> Autor original: Regis Cosnier
+> Contribuidores citados en el proyecto original: Mathieu Malaterre,
+> Paul Selormey, Edu Serna, TCH68k y otros autores mencionados en el `ReadMe.txt`.
+
 Port en **Kotlin + JavaFX** llamado **XSDDiagramX**, de [XSD Diagram](https://github.com/dgis/xsddiagram)
 (C#, WinForms, .NET 2.0, Regis Cosnier — GPL/LGPL/MS-PL).
 
-## Aviso legal sobre el origen y la licencia
+## Origen y licencia
 
-Este repositorio es un port de código de [XSD Diagram](https://github.com/dgis/xsddiagram),
-creado originalmente por **Regis Cosnier** y mantenido por la comunidad del proyecto
-original. El repositorio original también menciona contribuciones de
-**Mathieu Malaterre**, **Paul Selormey**, **Edu Serna**, **TCH68k** y otros autores,
-según se indica en `ReadMe.txt` del proyecto original.
+Este repositorio es un port derivado del proyecto original
+[XSD Diagram](https://github.com/dgis/xsddiagram), desarrollado por
+**Regis Cosnier** y otros contribuidores del proyecto original.
 
-Este proyecto es un trabajo derivado del proyecto original y no es un fork oficial
-ni un repositorio mantenido por `@dgis`. Por tanto, antes de hacer público el repositorio,
-conviene mantener la atribución correcta y conservar la licencia compatible con la original.
+El proyecto original está licenciado bajo **GPL / LGPL / MS-PL** según
+se indica en sus archivos de licencia y en su `ReadMe.txt`.
+Este repositorio no reemplaza la autoría original ni pretende
+presentarse como un proyecto independiente del original.
 
-Recomendación prudente para evitar inconvenientes legales:
+Este port se distribuye como trabajo derivado del proyecto original,
+manteniendo la atribución correspondiente al repositorio fuente y a
+sus autores. Por seguridad jurídica y por compatibilidad con la obra
+original, se recomienda publicar este repositorio bajo la licencia
+**GPL-2.0-or-later**.
 
-- Mantener la atribución al proyecto original y a sus autores.
-- Mantener una licencia compatible con la del proyecto original.
-- No reclamar “propiedad total” del código ni ocultar que el proyecto es un port.
+Esto significa que:
+- se mantiene la atribución al proyecto original;
+- se reconoce la autoría de Regis Cosnier y de los contribuyentes
+  originales;
+- la licencia del port es compatible con el origen del código;
+- no se oculta que este proyecto es un port de XSD Diagram.
 
-En la práctica, la opción más conservadora para este caso es usar
-**GNU General Public License v2.0 or later (GPL-2.0-or-later)**,
-porque el repositorio original incluye los archivos `LICENSE-GPL.txt`, `LICENSE-LGPL.txt`
-y `LICENSE-MS-PL.txt`, y el texto `ReadMe.txt` indica que el programa se distribuye bajo
-licencia GPL, con partes dual-licenciadas bajo LGPL y MS-PL.
+Repositorio original:
+- https://github.com/dgis/xsddiagram
 
-En otras palabras, este repositorio debe publicarse como un proyecto derivado de XSD Diagram,
-con un aviso explícito de origen y con la licencia adecuada para respetar la licencia del
-proyecto original.
+Autor original:
+- Regis Cosnier
 
-> Nota: esto no sustituye asesoría legal. Si se quiere una decisión final sobre licencia,
-> lo recomendable es revisar el texto legal completo del proyecto original y, si se quiere
-> una licencia distinta, solicitar permiso explícito a los autores originales.
+Contribuidores citados en el proyecto original:
+- Mathieu Malaterre
+- Paul Selormey
+- Edu Serna
+- TCH68k
+- y otros autores mencionados en `ReadMe.txt`
+
+> Este repositorio es una adaptación/port a Kotlin/JavaFX del proyecto
+> original y no sustituye ni elimina la autoría original.
 
 **Fase 1 completada**: estructuración del proyecto + port 1:1 de la capa de dominio
 (parsing + motor del diagrama). Los tests de dominio cargan los esquemas reales
-de la carpeta `Testses` del original.
+de la carpeta `Tests\` del original.
 
 **Fase 2 completada**: GUI JavaFX — `MainForm` con menús/toolbar/paneles,
 `DiagramControlContainer` + `DiagramControl` (scroll virtual + pan + rueda) y
