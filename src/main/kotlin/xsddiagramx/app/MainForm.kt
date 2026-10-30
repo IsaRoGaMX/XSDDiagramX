@@ -67,8 +67,10 @@ import xsddiagramx.rendering.DiagramPrinter
 import xsddiagramx.rendering.KPoint
 import xsddiagramx.rendering.KSize
 import xsddiagramx.rendering.javafx.JavaFxDrawingContext
+import xsddiagramx.tools.IconResources
 import java.io.File
 import java.net.URL
+import javax.swing.Icon
 import kotlin.math.max
 
 // ---------------------------------------------------------------------------
@@ -124,6 +126,8 @@ class MainForm : BorderPane() {
     private lateinit var tabControlView: TabPane
     private lateinit var statusLabel: Label
     private lateinit var textBoxElementPath: TextField
+    private lateinit var sidePanel: VBox
+    private lateinit var mainSplit: SplitPane
 
     private lateinit var toolStripComboBoxSchemaElement: ComboBox<XSDObject>
     private lateinit var toolStripComboBoxZoom: ComboBox<String>
@@ -134,9 +138,9 @@ class MainForm : BorderPane() {
     private lateinit var toolStripButtonRemoveAllFromDiagram: Button
     private lateinit var toolStripButtonExpandOneLevel: Button
     private lateinit var toolStripButtonShowDocumentation: ToggleButton
-    private lateinit var toolStripButtonShowType: ToggleButton
-    private lateinit var toolStripButtonShowReferenceBoundingBox: ToggleButton
-    private lateinit var toolStripButtonTogglePanel: ToggleButton
+    //private lateinit var toolStripButtonShowType: ToggleButton
+    //private lateinit var toolStripButtonShowReferenceBoundingBox: ToggleButton
+    //private lateinit var toolStripButtonTogglePanel: ToggleButton
     private lateinit var closeMenuItem: MenuItem
     private lateinit var saveDiagramMenuItem: MenuItem
     private lateinit var printPreviewMenuItem: MenuItem
@@ -254,10 +258,12 @@ class MainForm : BorderPane() {
     // ------------------------------------------------------------------
 
     private fun buildToolbar() {
-        val openButton = Button("Open").apply {
-            tooltip = Tooltip("Open a schema file")
-            setOnAction { openSchema() }
-        }
+        val openButton = IconResources.toolbarButton("16px/folder_page_white.png", "Open a schema file") { openSchema() }
+
+//        val openButton = Button("Open").apply {
+//            tooltip = Tooltip("Open a schema file")
+//            setOnAction { openSchema() }
+//        }
 
         toolStripComboBoxSchemaElement = ComboBox<XSDObject>().apply {
             prefWidth = 250.0
@@ -269,25 +275,31 @@ class MainForm : BorderPane() {
             }
         }
 
-        toolStripButtonAddToDiagram = Button("Add").apply {
+        toolStripButtonAddToDiagram = Button().apply {
             tooltip = Tooltip("Add the selected element to the diagram")
+            graphic = IconResources.graphic("16px/add.png", 16.0)
             isDisable = true
             setOnAction {
                 addToDiagram(toolStripComboBoxSchemaElement.selectionModel.selectedItem)
             }
         }
-        toolStripButtonAddAllToDiagram = Button("Add all").apply {
+
+        toolStripButtonAddAllToDiagram = Button().apply {
             tooltip = Tooltip("Add all the elements to the diagram")
+            graphic = IconResources.graphic("16px/chart_organisation_add.png", 16.0)
             isDisable = true
             setOnAction { addAllToDiagram() }
         }
-        toolStripButtonRemoveAllFromDiagram = Button("Remove all").apply {
+        toolStripButtonRemoveAllFromDiagram = Button().apply {
             tooltip = Tooltip("Remove all the elements from the diagram")
+            graphic = IconResources.graphic("16px/cross.png", 16.0)
             isDisable = true
             setOnAction { removeAllFromDiagram() }
         }
-        toolStripButtonExpandOneLevel = Button("Expand 1").apply {
+
+        toolStripButtonExpandOneLevel = Button().apply {
             tooltip = Tooltip("Expand all the elements one level")
+            graphic = IconResources.graphic("16px/toggle_expand.png", 16.0)
             isDisable = true
             setOnAction {
                 if (diagram.expandOneLevel()) updateDiagram()
@@ -317,8 +329,9 @@ class MainForm : BorderPane() {
             }
         }
 
-        toolStripButtonShowDocumentation = ToggleButton("Doc").apply {
+        toolStripButtonShowDocumentation = ToggleButton().apply {
             tooltip = Tooltip("Show the documentation")
+            graphic = IconResources.graphic("16px/document_inspector.png", 16.0)
             setOnAction {
                 diagram.showDocumentation = isSelected
                 // ≈ cs line 1745: Settings.Default.ShowDocumentation = Checked.
@@ -326,37 +339,44 @@ class MainForm : BorderPane() {
                 updateDiagram()
             }
         }
-        toolStripButtonShowType = ToggleButton("Type").apply {
-            tooltip = Tooltip("Show the type of the node")
-            setOnAction {
-                diagram.showType = isSelected
-                updateDiagram()
-            }
-        }
-        toolStripButtonShowReferenceBoundingBox = ToggleButton("Box").apply {
-            tooltip = Tooltip("Show the reference bounding box")
-            setOnAction {
-                diagram.showBoundingBox = isSelected
-                updateDiagram()
-            }
-        }
-        toolStripButtonTogglePanel = ToggleButton("Panel").apply {
-            tooltip = Tooltip("Show or hide the schema panel")
-            isSelected = true
-            setOnAction {
-                if (isSelected) showSidePanel() else hideSidePanel()
-                // ≈ cs line 1031: Settings.Default.DisplayPanel = Checked.
-                Settings.displayPanel = isSelected
-            }
-        }
+
+//        toolStripButtonShowType = ToggleButton("Type").apply {
+//            tooltip = Tooltip("Show the type of the node")
+//            setOnAction {
+//                diagram.showType = isSelected
+//                updateDiagram()
+//            }
+//        }
+
+//        toolStripButtonShowReferenceBoundingBox = ToggleButton("Box").apply {
+//            tooltip = Tooltip("Show the reference bounding box")
+//            setOnAction {
+//                diagram.showBoundingBox = isSelected
+//                updateDiagram()
+//            }
+//        }
+
+//        toolStripButtonTogglePanel = ToggleButton().apply {
+//            tooltip = Tooltip("Show or hide the schema panel")
+//            //graphic = IconResources.graphic(if(isSelected) "16px/application_side_expand.png" else "16px/application_side_contract.png", 16.0)
+//            isSelected = true
+//            setOnAction {
+//                if (isSelected) showSidePanel() else hideSidePanel()
+//                // ≈ cs line 1031: Settings.Default.DisplayPanel = Checked.
+//                Settings.displayPanel = isSelected
+//                graphic = IconResources.graphic(if(isSelected) "16px/application_side_expand.png" else "16px/application_side_contract.png", 16.0)
+//            }
+//        }
 
         toolStripTextBoxSearch = TextField().apply {
             promptText = "Text to find"
             prefWidth = 180.0
             setOnAction { search() }
         }
-        val searchButton = Button("Find").apply {
+
+        val searchButton = Button().apply {
             tooltip = Tooltip("Find text (Ctrl+F)")
+            graphic = IconResources.graphic("16px/find.png", 16.0)
             setOnAction { search() }
         }
 
@@ -368,8 +388,8 @@ class MainForm : BorderPane() {
             Separator(), Label(" Zoom "), toolStripComboBoxZoom,
             Label(" Align "), toolStripComboBoxAlignement,
             Separator(),
-            toolStripButtonShowDocumentation, toolStripButtonShowType,
-            toolStripButtonShowReferenceBoundingBox, toolStripButtonTogglePanel,
+            toolStripButtonShowDocumentation, /*toolStripButtonShowType,*/
+            /*toolStripButtonShowReferenceBoundingBox, toolStripButtonTogglePanel,*/
             Separator(),
             toolStripTextBoxSearch, searchButton
         )
@@ -480,13 +500,13 @@ class MainForm : BorderPane() {
             sideSplit.minHeight = 120.0
         }
 
-        val sidePanel = VBox(4.0).apply {
+        sidePanel = VBox(4.0).apply {
             padding = Insets(4.0)
             VBox.setVgrow(sideVertical, Priority.ALWAYS)
             children.add(sideVertical)
         }
 
-        val mainSplit = SplitPane(tabControlView, sidePanel).apply {
+        mainSplit = SplitPane(tabControlView, sidePanel).apply {
             // ≈ SplitterDistance 658/876 ≈ 0.75 del C#.
             setDividerPosition(0, 0.75)
             SplitPane.setResizableWithParent(sidePanel, false)
@@ -569,10 +589,10 @@ class MainForm : BorderPane() {
         // del valor por defecto (8, 1) que había antes de fase 4).
         toolStripComboBoxZoom.selectionModel.select(Settings.zoom)
         toolStripComboBoxAlignement.selectionModel.select(Settings.alignement)
-        if (toolStripButtonTogglePanel.isSelected != Settings.displayPanel) {
-            toolStripButtonTogglePanel.isSelected = Settings.displayPanel
-        }
-        if (Settings.displayPanel) showSidePanel() else hideSidePanel()
+//        if (toolStripButtonTogglePanel.isSelected != Settings.displayPanel) {
+//            toolStripButtonTogglePanel.isSelected = Settings.displayPanel
+//        }
+//        if (Settings.displayPanel) showSidePanel() else hideSidePanel()
 
         // ≈ MainForm_Load (181): MRUManager persistente ("Recent Files").
         mruManager = MRUManager(
@@ -1381,15 +1401,16 @@ class MainForm : BorderPane() {
     }
 
     private fun hideSidePanel() {
-        val split = center as SplitPane
-        split.items[1].isVisible = false
-        split.setDividerPosition(0, 1.0)
+
+        //mainSplit.items[1].isVisible = false
+        mainSplit.setDividerPosition(0, 1.0)
+        mainSplit.items.removeLast()
     }
 
     private fun showSidePanel() {
-        val split = center as SplitPane
-        split.items[1].isVisible = true
-        split.setDividerPosition(0, 0.75)
+        //mainSplit.items[1].isVisible = true
+        mainSplit.setDividerPosition(0, 0.75)
+        mainSplit.items.add(sidePanel)
     }
 
     private fun cycleTab(delta: Int) {

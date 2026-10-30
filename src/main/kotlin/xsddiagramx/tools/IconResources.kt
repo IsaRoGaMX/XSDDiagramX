@@ -10,7 +10,7 @@ import javafx.scene.image.ImageView
 
 object IconResources {
     /** Crea un gráfico con el tamaño solicitado y un glifo de reserva si falta el recurso. */
-    fun graphic(path: String, size: Double, fallback: String): Node {
+    fun graphic(path: String, size: Double, fallback: String = ""): Node {
         val resource = IconResources::class.java.getResource("/icons/$path")
         if (resource == null) {
             return Label(fallback).apply {
@@ -28,12 +28,12 @@ object IconResources {
     }
 
     /** Construye un botón de barra de herramientas sin texto y con su tooltip. */
-    fun toolbarButton(path: String, tooltip: String, action: () -> Unit): Button =
+    fun toolbarButton(path: String, tooltip: String, action: (Button) -> Unit): Button =
         Button().apply {
             graphic = IconResources.graphic(path, 16.0, tooltip)
             this.tooltip = Tooltip(tooltip)
             accessibleText = tooltip
-            setOnAction { action() }
+            setOnAction { action(this) }
         }
 
     fun toolbarToggleButton(path: String, tooltip: String, action: (Boolean) -> Unit): ToggleButton =
