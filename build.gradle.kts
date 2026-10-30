@@ -32,7 +32,7 @@ val javafxPlatform = when {
     else -> if (!osArch.contains("aarch64")) "linux" else "linux-aarch64"
 }
 
-val javafxModules = listOf("base", "graphics", "controls")
+val javafxModules = listOf("base", "graphics", "controls", "swing")
 
 dependencies {
     for (module in javafxModules) {

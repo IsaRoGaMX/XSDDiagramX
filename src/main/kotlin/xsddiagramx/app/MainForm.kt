@@ -51,6 +51,7 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.stage.FileChooser
 import javafx.stage.Stage
+import xsddiagramx.AppLogo
 import xsddiagramx.DiagramHelpers
 import xsddiagramx.Options
 import xsddiagramx.parsing.Schema
@@ -604,6 +605,8 @@ class MainForm : BorderPane() {
 
         stage.title = originalTitle
         stage.scene = Scene(this, 1024.0, 768.0)
+        stage.icons.add(AppLogo.applicationImage())
+        AppLogo.applyDockIcon()
         stage.show()
 
         // ≈ MainForm_Load (192-223): esquema y opciones de la línea de comandos.
