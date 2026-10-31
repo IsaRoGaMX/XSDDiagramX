@@ -1,8 +1,9 @@
 //    XSD Diagram - Kotlin/JavaFX port
-//    Port de XSDDiagrams\Rendering\DiagramTxtRenderer.cs
+//    DiagramTxtRenderer.kt: renderer que vuelca el diagrama como texto plano
+//    (TSV o CSV) con columnas por campo.
+//    Origen C#: port de XSDDiagrams\Rendering\DiagramTxtRenderer.cs.
 //
-//    Licencias del original: LGPL / MS-PL (véase LICENSE-LGPL.txt / LICENSE-MS-PL.txt)
-//    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización)
+//    Licencias del original: LGPL / MS-PL. Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
 package xsddiagramx.rendering
 
 import xsddiagramx.DiagramHelpers
@@ -17,27 +18,48 @@ import java.util.regex.Pattern
  */
 class DiagramTxtRenderer(private val writer: Writer) : DiagramRenderer() {
 
+    /** Modo CSV (separador coma) o TXT (separador tabulación). */
     var isCSV = false
+
+    /** Separador de campos definitivo, fijado en render(diagram) según isCSV. */
     private var fieldSeparator = "\t"
+
+    /** Campos solicitados por el llamador (vacío = lista completa por defecto). ≈ textOutputFields. */
     private var textOutputFields: List<String> = emptyList()
+
+    /** Campos finales tras filtrar contra `fields` (≈ finalTextOutputFields del C#). */
     private var finalTextOutputFields: List<String> = emptyList()
+
+    /** Si se activa, emite una fila extra por cada atributo XSD del elemento. ≈ displayAttributes. */
     private var displayAttributes = false
+
+    /** Esquema de referencia para enumerar atributos (≈ schema). */
     private var schema: xsddiagramx.parsing.Schema? = null
 
     /** ≈ iteratingLastChild (también público en el C#, fijado durante el recorrido). */
     @JvmField
     var iteratingLastChild = false
 
+    /** ≈ Name del formato: "TXT". */
     override val name: String get() = "TXT"
 
     // ≈ setters/getters del C# (kotlin: propiedades).
+    /** Fija si se muestran los atributos de cada elemento. ≈ set DisplayAttributes. */
     fun setDisplayAttributes(value: Boolean) { displayAttributes = value }
+
+    /** Devuelve si se muestran los atributos de cada elemento. ≈ get DisplayAttributes. */
     fun getDisplayAttributes(): Boolean = displayAttributes
 
+    /** Fija el esquema usado para enumerar atributos. ≈ set Schema. */
     fun setSchema(value: xsddiagramx.parsing.Schema?) { schema = value }
+
+    /** Devuelve el esquema usado para enumerar atributos. ≈ get Schema. */
     fun getSchema(): xsddiagramx.parsing.Schema? = schema
 
+    /** Fija la lista de columnas de salida. ≈ set TextOutputFields. */
     fun setTextOutputFields(value: List<String>) { textOutputFields = value }
+
+    /** Devuelve la lista de columnas de salida solicitada. ≈ get TextOutputFields. */
     fun getTextOutputFields(): List<String> = textOutputFields
 
     companion object {
@@ -45,10 +67,12 @@ class DiagramTxtRenderer(private val writer: Writer) : DiagramRenderer() {
         private val fields = listOf(
             "PATH", "NAME", "TYPE", "NAMESPACE", "COMMENT", "SEQ", "LASTCHILD", "XSDTYPE"
         )
-        /** ≈ Regex.Replace(text, " +", " "). */
+
+        /** ≈ Regex.Replace(text, " +", " "): colapsa espacios en los comentarios. */
         private val spacesRegex = Pattern.compile(" +")
     }
 
+    /** ≈ BeginItemsRender: escribe la fila de cabecera con los campos finales. */
     override fun beginItemsRender() {
         //PATH,NAME,TYPE,NAMESPACE,COMMENT,SEQ,LASTCHILD,XSDTYPE,ATTRIBUT_NAME,ATTRIBUT_TYPE,ATTRIBUT_COMMENT
         for (i in finalTextOutputFields.indices) {
@@ -58,10 +82,11 @@ class DiagramTxtRenderer(private val writer: Writer) : DiagramRenderer() {
         writer.write("\r\n")
     }
 
+    /** ≈ EndItemsRender: no-op (TXT/CSV no llevan pie). */
     override fun endItemsRender() {
     }
 
-    /** ≈ Render(Diagram). */
+    /** ≈ Render(Diagram): fija separador y campos, escribe cabecera y recorre las raíces. */
     override fun render(diagram: Diagram) {
         fieldSeparator = if (isCSV) "," else "\t"
 
@@ -77,7 +102,11 @@ class DiagramTxtRenderer(private val writer: Writer) : DiagramRenderer() {
         endItemsRender()
     }
 
-    /** ≈ Render(DiagramItem). */
+    /**
+     * ≈ Render(DiagramItem): emite la fila del ítem (ruta, nombre, tipo,
+     * namespace, comentario, ocurrencia, último hijo, XSD type), opcionalmente
+     * una fila por atributo, y recorre recursivamente los hijos visibles.
+     */
     override fun render(drawingItem: DiagramItem) {
         val type = when (drawingItem.tabSchema) {
             is xsddiagramx.parsing.element -> "element"
@@ -93,7 +122,6 @@ class DiagramTxtRenderer(private val writer: Writer) : DiagramRenderer() {
             var path = "/" + drawingItem.name
             var parentElement = drawingItem.parent
             while (parentElement != null) {
-                //if (parentElement.itemType == DiagramItemType.element && !parentElement.name.isNullOrEmpty())
                 if ((type == "element" || type == "simpleType" || type == "complexType") && parentElement.name.isNotEmpty())
                     path = "/" + parentElement.name + path
                 parentElement = parentElement.parent

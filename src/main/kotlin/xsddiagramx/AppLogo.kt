@@ -1,3 +1,9 @@
+//    XSD Diagram - Kotlin/JavaFX port
+//    AppLogo.kt: icono de la aplicación (titulo/taskbar/Dock). Sin equivalente
+//    directo en el C# (usaba XSDDiagram.ico en Form.Icon; aquí se extrae el PNG
+//    de mayor tamaño de icon.ico o se genera uno con Canvas si falta).
+//
+//    Licencias del original: LGPL / MS-PL.
 package xsddiagramx
 
 import javafx.scene.canvas.Canvas

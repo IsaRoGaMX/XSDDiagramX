@@ -1,13 +1,11 @@
 //    XSD Diagram - Kotlin/JavaFX port
-//    Port de XSDDiagrams\Rendering\Diagram.cs
+//    Diagram.kt: motor del diagrama — colección de raíces, expansión perezosa
+//    (binding con ElementsByName en el momento de expandir), layout (medida +
+//    posición), hit-test, búsqueda y utilidades de escalado.
+//    Origen C#: port de XSDDiagrams\Rendering\Diagram.cs.
 //
-//    Licencias del original: LGPL / MS-PL (véase LICENSE-LGPL.txt / LICENSE-MS-PL.txt)
-//    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización),
-//    Edu Serna (funcionalidad de búsqueda)
-//
-//    Motor del diagrama: colección de raíces, expansión perezosa (binding con
-//    ElementsByName en el momento de expandir), layout (medida + posición),
-//    hit-test, búsqueda y utilidades de escalado.
+//    Licencias del original: LGPL / MS-PL. Autores originales: Regis Cosnier (inicial),
+//    Paul Selormey (refactorización), Edu Serna (funcionalidad de búsqueda).
 package xsddiagramx.rendering
 
 import xsddiagramx.parsing.Annotated
@@ -35,6 +33,11 @@ import xsddiagramx.parsing.simpleType
  */
 typealias RequestAnyElementHandler = (diagramElement: DiagramItem) -> Pair<element, String>?
 
+/**
+ * Motor del diagrama. ≈ `XSDDiagrams.Rendering.Diagram` (Diagram.cs): construye
+ * el árbol visual desde el esquema, lo mide/posiciona (Layout), resuelve el
+ * hit-test, la búsqueda y el escalado.
+ */
 class Diagram {
 
     // ------------------------------------------------------------
@@ -75,41 +78,72 @@ class Diagram {
     // Public properties
     // ------------------------------------------------------------
 
+    /** Tamaño del lienzo de referencia (≈ Diagram.Size). */
     var size: KSize
         get() = _sizes
         set(value) { _sizes = value }
+
+    /** Espaciado entre elementos raíz y alrededor del diagrama (≈ Diagram.Padding). */
     var padding: KSize
         get() = _padding
         set(value) { _padding = value }
+
+    /** Caja que engloba todo el diagrama, calculada en layout() (≈ Diagram.BoundingBox). */
     val boundingBox: KRectangle get() = _boundingBox
+
+    /** Factor de escalado del diagrama (≈ Diagram.Scale). */
     var scale: Float
         get() = _scale
         set(value) { _scale = value }
+
+    /** Alineación vertical de los nodos en su caja (≈ Diagram.Alignement). */
     var alignement: DiagramAlignement
         get() = _alignement
         set(value) { _alignement = value }
+
+    /** Dibuja el bounding box de depuración de cada nodo (≈ Diagram.ShowBoundingBox). */
     var showBoundingBox: Boolean
         get() = _showBoundingBox
         set(value) { _showBoundingBox = value }
+
+    /** Muestra la documentación xs:annotation bajo el elemento (≈ Diagram.ShowDocumentation). */
     var showDocumentation: Boolean
         get() = _showDocumentation
         set(value) { _showDocumentation = value }
+
+    /** Muestra siempre la cadena de ocurrencias min..max (≈ Diagram.AlwaysShowOccurence). */
     var alwaysShowOccurence: Boolean
         get() = _alwaysShowOccurence
         set(value) { _alwaysShowOccurence = value }
+
+    /** Añade "name:type" tras el nombre del nodo (≈ Diagram.ShowType). */
     var showType: Boolean
         get() = _showType
         set(value) { _showType = value }
+
+    /** Layout compacto: paddings reducidos y desplazamientos de ocurrencias (≈ Diagram.CompactLayoutDensity). */
     var compactLayoutDensity: Boolean
         get() = _compactLayoutDensity
         set(value) { _compactLayoutDensity = value }
 
     // Fuentes (resueltas en layout(); visibles para DiagramItem y renderers).
+
+    /** Fuente base del nombre del nodo (≈ Diagram.Font). */
     val font: FontDescription? get() = _font
+
+    /** Fuente del nombre escalada por scale, resuelta en layout() (≈ Diagram.FontScaled). */
     val fontScaled: FontDescription? get() = _fontScaled
+
+    /** Fuente pequeña para ocurrencias (≈ Diagram.SmallFont). */
     val smallFont: FontDescription? get() = _smallFont
+
+    /** Fuente pequeña escalada por scale (≈ Diagram.SmallFontScaled). */
     val smallFontScaled: FontDescription? get() = _smallFontScaled
+
+    /** Fuente del bloque de documentación (≈ Diagram.DocumentationFont). */
     val documentationFont: FontDescription? get() = _documentationFont
+
+    /** Fuente de documentación escalada por scale (≈ Diagram.DocumentationFontScaled). */
     val documentationFontScaled: FontDescription? get() = _documentationFontScaled
 
     /** Compartido con Schema (misma referencia que en el C#): clave del binding perezoso. */
@@ -117,10 +151,16 @@ class Diagram {
         get() = _elementsByName
         set(value) { _elementsByName = value }
 
+    /** Elementos raíz añadidos al diagrama (≈ Diagram.RootElements). */
     val rootElements: List<DiagramItem> get() = _rootElements
+
+    /** Elemento seleccionado actualmente, o null (≈ Diagram.SelectedElement). */
     val selectedElement: DiagramItem? get() = _selectedElement
 
+    /** Número de resultados de la última búsqueda (≈ Diagram.SearchHits). */
     val searchHits: Int get() = _lastSearchHitElements.size
+
+    /** Resultado de búsqueda actual, 1-based (0 si no hay búsqueda activa) (≈ Diagram.ActualSearchHit). */
     val actualSearchHit: Int get() = _lastSearchHitElementIndex + 1
 
     /** Equivale al evento RequestAnyElement (usado con xs:any). */
@@ -139,6 +179,7 @@ class Diagram {
             else -> null
         }
 
+    /** Equivale a AddElement(XMLSchema.element, string): añade el elemento como raíz. */
     fun addElement(childElement: element, nameSpace: String): DiagramItem =
         addElement(null, childElement, nameSpace)
 
@@ -217,9 +258,11 @@ class Diagram {
         return childDiagramElement
     }
 
+    /** Equivale a AddComplexType(XMLSchema.complexType, string): añade el tipo como raíz. */
     fun addComplexType(childElement: complexType, nameSpace: String): DiagramItem =
         addComplexType(null, childElement, false, nameSpace)
 
+    /** Equivale a AddComplexType(DiagramItem, XMLSchema.complexType, string). */
     fun addComplexType(
         parentDiagramElement: DiagramItem?,
         childElement: complexType,
@@ -304,9 +347,11 @@ class Diagram {
         return childDiagramElement
     }
 
+    /** Equivale a AddCompositors(XMLSchema.group, string): añade el xs:group como raíz. */
     fun addCompositors(childGroup: group, nameSpace: String): DiagramItem =
         addCompositors(null, childGroup, DiagramItemGroupType.Group, nameSpace)
 
+    /** Equivale a AddCompositors(DiagramItem, XMLSchema.group, string). */
     fun addCompositors(
         parentDiagramElement: DiagramItem?,
         childGroup: group,
@@ -373,6 +418,7 @@ class Diagram {
     // Remove / clear
     // ------------------------------------------------------------
 
+    /** Equivale a Remove(DiagramItem): quita el nodo de su padre (o de la raíz). */
     fun remove(element: DiagramItem) {
         clearSearch()
         val parent = element.parent
@@ -384,6 +430,7 @@ class Diagram {
         }
     }
 
+    /** Equivale a RemoveAll(): borra todos los elementos raíz. */
     fun removeAll() {
         clearSearch()
         _rootElements.clear()
@@ -405,6 +452,7 @@ class Diagram {
         return result
     }
 
+    /** Equivale a Clear(): vacía el diagrama (binding, raíces y selección). */
     fun clear() {
         _elementsByName.clear()
         _rootElements.clear()
@@ -416,6 +464,7 @@ class Diagram {
     // Búsqueda
     // ------------------------------------------------------------
 
+    /** Equivale a ClearSearch(): borra el texto y los hits de la búsqueda activa. */
     fun clearSearch() {
         _lastSearchText = ""
         _lastSearchHitElements.clear()
@@ -443,6 +492,7 @@ class Diagram {
         }
     }
 
+    /** Equivale al Search(string, IList<DiagramItem>) privado: recolecta hits por nombre (sólo nodos visibles). */
     private fun searchInternal(text: String, items: List<DiagramItem>) {
         for (item in items) {
             if (item.name.lowercase().contains(text)) {
@@ -460,7 +510,7 @@ class Diagram {
 
     /** Equivale a Layout(Graphics g): culturas de fuentes + medida + posición. */
     fun layout(g: DrawingContext) {
-        val fontName = "Arial" // "Verdana"; // "Arial" (comentario del original)
+        val fontName = "Arial" // el original también consideró "Verdana"
 
         if (_font == null) {
             _font = FontDescription(fontName, 10.0f, bold = true)
@@ -468,7 +518,6 @@ class Diagram {
             _documentationFont = FontDescription(fontName, 10.0f)
         }
         if (_fontScaled == null || _lastScale != _scale) {
-            // float fontScale = (float)Math.Pow(_scale, 2.0);  (comentario del original)
             val fontScale = _scale
             _fontScaled = FontDescription(fontName, 10.0f * fontScale, bold = true)
             _smallFontScaled = FontDescription(fontName, 9.0f * fontScale)
@@ -507,14 +556,18 @@ class Diagram {
         return result
     }
 
+    /** Equivale a ScaleInt(int): entero truncado por scale. */
     fun scaleInt(integer: Int): Int = (integer * scale).toInt()
 
+    /** Equivale a ScalePoint(Point): punto redondeado por scale. */
     fun scalePoint(point: KPoint): KPoint =
         KPoint(Math.round(point.x * scale).toInt(), Math.round(point.y * scale).toInt())
 
+    /** Equivale a ScaleSize(Size): tamaño redondeado por scale. */
     fun scaleSize(point: KSize): KSize =
         KSize(Math.round(point.width * scale).toInt(), Math.round(point.height * scale).toInt())
 
+    /** Equivale a ScaleRectangle(Rectangle): caja redondeada por scale. */
     fun scaleRectangle(rectangle: KRectangle): KRectangle =
         KRectangle(
             Math.round(rectangle.x * scale).toInt(),
@@ -610,6 +663,7 @@ class Diagram {
     // Selección
     // ------------------------------------------------------------
 
+    /** Equivale a SelectElement(DiagramItem): conmuta la selección actual. */
     fun selectElement(element: DiagramItem?) {
         _selectedElement?.isSelected = false
         if (element != null) {
@@ -697,7 +751,6 @@ class Diagram {
 
     /** Equivale a ExpandComplexType(DiagramItem, XMLSchema.complexType). */
     private fun expandComplexType(parentDiagramElement: DiagramItem, complexTypeElement: complexType) {
-        // XMLSchema.annotated[] items = complexTypeElement.Items;  (port 1:1)
         val items = complexTypeElement.items
         val itemsChoiceType = complexTypeElement.itemsElementName
 

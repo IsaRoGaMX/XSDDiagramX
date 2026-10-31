@@ -1,8 +1,9 @@
 //    XSD Diagram - Kotlin/JavaFX port
-//    Port de XSDDiagrams\Rendering\DiagramExporter.cs
+//    DiagramExporter.kt: exportación del diagrama a PNG/JPEG/TXT/CSV/SVG según
+//    la extensión del fichero de salida.
+//    Origen C#: port de XSDDiagrams\Rendering\DiagramExporter.cs.
 //
-//    Licencias del original: LGPL / MS-PL (véase LICENSE-LGPL.txt / LICENSE-MS-PL.txt)
-//    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización)
+//    Licencias del original: LGPL / MS-PL. Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
 //
 //    Diferencias:
 //      - Formato .emf omitido (metafiles GDI+ de Windows; sin equivalente en
@@ -17,7 +18,10 @@ import java.io.File
 import java.io.OutputStream
 import javax.imageio.ImageIO
 
-/** ≈ DiagramAlertHandler: confirmación para imágenes gigantes (true = continuar). */
+/**
+ * ≈ DiagramAlertHandler: callback de confirmación para imágenes gigantes
+ * (devuelve true para continuar la generación).
+ */
 typealias DiagramAlertHandler = (title: String, message: String) -> Boolean
 
 /**
@@ -27,7 +31,11 @@ typealias DiagramAlertHandler = (title: String, message: String) -> Boolean
  */
 class DiagramExporter(private val diagram: Diagram) {
 
-    /** ≈ Export(outputFilename, referenceGraphics, alerteDelegate, parameters). */
+    /**
+     * ≈ Export(outputFilename, referenceGraphics, alerteDelegate, parameters):
+     * deduce la extensión del nombre (por defecto ".svg") y abre el stream
+     * de salida antes de delegar en la variante sobrecargada por stream.
+     */
     fun export(
         outputFilename: String,
         referenceContext: xsddiagramx.rendering.javafx.JavaFxDrawingContext,
@@ -45,7 +53,11 @@ class DiagramExporter(private val diagram: Diagram) {
         }
     }
 
-    /** ≈ Export(Stream, extension, referenceGraphics, alerteDelegate, parameters). */
+    /**
+     * ≈ Export(Stream, extension, referenceGraphics, alerteDelegate, parameters);
+     * enruta a PNG/JPEG (documento "papel"), TXT/CSV (DiagramTxtRenderer con
+     * parámetros específicos) o, por defecto, SVG (DiagramSvgRenderer).
+     */
     fun export(
         stream: OutputStream,
         extension: String,

@@ -13,8 +13,11 @@ import xsddiagramx.rendering.KRectangle
 import xsddiagramx.rendering.KSize
 import xsddiagramx.rendering.javafx.DiagramJavaFxRenderer
 
+/** ≈ DiagramControl del C#: Canvas donde se pinta el diagrama; [paint] lo
+ *  invoca el contenedor con el punto virtual. */
 class DiagramControl : Canvas() {
 
+    /** Diagrama a pintar (≈ DiagramControl.Diagram; null = lienzo vacío). */
     var diagram: Diagram? = null
 
     /**

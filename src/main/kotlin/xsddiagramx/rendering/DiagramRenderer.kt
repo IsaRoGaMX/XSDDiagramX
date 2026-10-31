@@ -1,17 +1,16 @@
 //    XSD Diagram - Kotlin/JavaFX port
-//    Port de XSDDiagrams\Rendering\DiagramRenderer.cs
+//    DiagramRenderer.kt: clase base abstracta de los renderers "de salida"
+//    (TXT/SVG) que recorren el diagrama en profundidad y emiten a texto.
+//    Origen C#: port de XSDDiagrams\Rendering\DiagramRenderer.cs.
 //
-//    Licencias del original: LGPL / MS-PL (véase LICENSE-LGPL.txt / LICENSE-MS-PL.txt)
-//    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización)
-//
-//    Base de los renderers "de salida" (TXT/SVG). A diferencia de los
-//    renderers gráficos (DiagramGdiRenderer/DiagramJavaFxRenderer), éstos
-//    recorren el diagrama en profundidad y escriben hacia un Writer.
+//    Licencias del original: LGPL / MS-PL. Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
 package xsddiagramx.rendering
 
 /**
- * ≈ DiagramRenderer: renderer abstracto que recorre el diagrama
- * (Begin/Render/End) y emite hacia un destino de texto.
+ * ≈ DiagramRenderer: base de los renderers "de salida" (TXT/SVG). A diferencia de
+ * los renderers gráficos (DiagramGdiRenderer/DiagramJavaFxRenderer), éstos
+ * recorren el diagrama en profundidad (Begin/Render/End) y escriben hacia un
+ * Writer, no pintan sobre un contexto gráfico.
  */
 abstract class DiagramRenderer {
 

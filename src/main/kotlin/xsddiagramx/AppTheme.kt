@@ -20,6 +20,7 @@ object AppTheme {
         DARK("Oscuro");
 
         companion object {
+            /** Traduce la etiqueta persistida en Settings al modo del tema. */
             fun fromLabel(label: String): Mode =
                 entries.firstOrNull { it.label == label } ?: LIGHT
         }
@@ -65,6 +66,7 @@ object AppTheme {
     /** ≈ Settings.Theme (persistido en Preferences). */
     fun currentMode(): Mode = Mode.fromLabel(Settings.theme)
 
+    /** Paleta activa (Claro = esquema del original; Oscuro = tema del port). */
     fun currentPalette(): Palette = if (currentMode() == Mode.DARK) DARK else LIGHT
 
     /** Relleno de la Scene: en el tema oscuro cubre los huecos de layout. */

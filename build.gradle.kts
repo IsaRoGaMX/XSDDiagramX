@@ -45,16 +45,6 @@ dependencies {
 
 // JavaFX exige --module-path / --add-modules al ejecutar.
 tasks.withType<JavaExec>().configureEach {
-    // Passthrough de las propiedades del autotest (build → proceso hijo).
-    System.getProperty("xsddiagramx.selftest")?.let {
-        systemProperty("xsddiagramx.selftest", it)
-    }
-    System.getProperty("xsddiagramx.selftest.file")?.let {
-        systemProperty("xsddiagramx.selftest.file", it)
-    }
-    System.getProperty("xsddiagramx.fxwatch")?.let {
-        systemProperty("xsddiagramx.fxwatch", it)
-    }
     doFirst {
         val requiredJars = configurations.getByName("runtimeClasspath")
             .filter { it.name.startsWith("javafx-") && it.name.endsWith(".jar") }

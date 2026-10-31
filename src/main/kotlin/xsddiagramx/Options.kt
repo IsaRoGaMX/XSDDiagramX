@@ -18,21 +18,52 @@ package xsddiagramx
  */
 object Options {
 
+    /** ≈ inputFile (opcional "-i"; el C# tomaba el primer argumento sin opción). */
     var inputFile: String? = null
+
+    /** ≈ outputFile ("-o"): fichero de salida en modo batch. */
     var outputFile: String? = null
+
+    /** ≈ outputOnStdOut ("-os"): escribir el diagrama a salida estándar. */
     var outputOnStdOut = false
+
+    /** ≈ outputOnStdOutExtension (extensión tras "-os"); por defecto "png". */
     var outputOnStdOutExtension = "png"
+
+    /** ≈ rootElements ("-r"): elementos raíz a dibujar ("name@namespace"). */
     val rootElements = ArrayList<String>()
+
+    /** ≈ expandLevel ("-e"): niveles de expansión inicial. */
     var expandLevel = 0
+
+    /** ≈ showDocumentation ("-d"). */
     var showDocumentation = false
+
+    /** ≈ zoom ("-z", porcentaje enteros; default 100). */
     var zoom = 100.0f
+
+    /** ≈ forceHugeImageGeneration ("-y"). */
     var forceHugeImageGeneration = false
+
+    /** ≈ requestHelp ("-h"). */
     var requestHelp = false
+
+    /** Siempre false (no hay Mono en Java). */
     var isRunningOnMono = false
+
+    /** ≈ username ("-u") de autenticación HTTP. */
     var username: String? = null
+
+    /** ≈ password ("-p") de autenticación HTTP. */
     var password: String? = null
+
+    /** ≈ textOutputFields ("-f", separados por coma). */
     val textOutputFields = ArrayList<String>()
+
+    /** ≈ displayAttributes ("-a"). */
     var displayAttributes = false
+
+    /** -no-gui del port (el C# siempre lanzaba la GUI desde Program.cs). */
     var noGUI = false
 
     private var initialized = false

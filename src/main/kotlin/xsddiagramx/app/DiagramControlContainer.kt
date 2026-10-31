@@ -28,8 +28,13 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
+/** ≈ DiagramControlContainer del C#: BorderPane con scrollbars sobre el área
+ *  virtual, pan arrastrando con el ratón, rueda de scroll/zoom y los callbacks
+ *  que MainForm conecta ([diagramMouseClick], [diagramWheelZoom],
+ *  [diagramKeyPressed]). */
 class DiagramControlContainer : BorderPane() {
 
+    /** Canvas hijo (≈ DiagramControl). */
     val diagramControl = DiagramControl()
 
     // JOJO: en JavaFX un ScrollBar suelto es HORIZONTAL por defecto (al contrario
@@ -172,9 +177,7 @@ class DiagramControlContainer : BorderPane() {
 
         // ≈ DiagramControl.MouseWheel (MainForm): sin Control => scroll, con Control => zoom.
         diagramControl.addEventFilter(ScrollEvent.SCROLL) { event ->
-            val dbg = System.getProperty("xsddiagramx.fxwatch") == "1"
             if (event.isControlDown) {
-                if (dbg) println("[WHEELDBG] ctrl-wheel deltaY=${event.deltaY}")
                 diagramWheelZoom?.invoke(if (event.deltaY > 0) 1 else -1)
             } else {
                 // e.Delta del WinForms es 120/notch; deltaY ~40/notch: x3.
@@ -184,12 +187,6 @@ class DiagramControlContainer : BorderPane() {
                 val min = vScrollBar.min
                 val max = vScrollBar.max
                 val target = (vScrollBar.value - event.deltaY * 3).coerceIn(min, max)
-                if (dbg) {
-                    println(
-                        "[WHEELDBG] deltaY=${event.deltaY} value=${vScrollBar.value} -> $target " +
-                            "(range $min..$max, visible=${vScrollBar.isVisible})"
-                    )
-                }
                 vScrollBar.value = target
             }
             event.consume()
@@ -204,19 +201,20 @@ class DiagramControlContainer : BorderPane() {
     // Propiedades virtuales (≈ VirtualPoint / VirtualSize)
     // ------------------------------------------------------------------
 
+    /** ≈ VirtualPoint. */
     fun getVirtualPoint(): KPoint = virtualPoint
 
+    /** ≈ setter de VirtualPoint. */
     fun setVirtualPoint(value: KPoint) {
         virtualPoint = value
     }
 
+    /** ≈ VirtualSize. */
     fun getVirtualSize(): KSize = virtualSize
 
+    /** ≈ setter de VirtualSize: re-layout de las scrollbars. */
     fun setVirtualSize(value: KSize) {
         virtualSize = value
-        if (System.getProperty("xsddiagramx.fxwatch") == "1") {
-            println("[SCROLLDBG] setVirtualSize=$value client=${diagramControl.clientSize}")
-        }
         layoutScrollBars()
     }
 
@@ -233,15 +231,17 @@ class DiagramControlContainer : BorderPane() {
         if (wanted != null) stylesheets.add(wanted)
     }
 
+    /** ≈ DiagramControl.Clear: lleva las scrollbars al origen y re-layout. */
     fun clear() {
         hScrollBar.value = 0.0
         vScrollBar.value = 0.0
         layoutScrollBars()
     }
 
+    /** ≈ DiagramControlContainer.LayoutScrollBars: ajusta max/visibleAmount y
+     *  visibilidad de ambas barras según el tamaño virtual vs. cliente. */
     fun layoutScrollBars() {
         val client = diagramControl.clientSize
-        val dbg = System.getProperty("xsddiagramx.fxwatch") == "1"
 
         // max = virtual - client (el rango real de desplazamiento) es lo que
         // hace el port (≈ Maximum-LargeChange del WinForms). Pero ADemás hay
@@ -271,14 +271,6 @@ class DiagramControlContainer : BorderPane() {
             vScrollBar.isVisible = false
         }
 
-        if (dbg) {
-            println(
-                "[SCROLLDBG] layout: virtual=$virtualSize client=$client " +
-                    "h.visible=${hScrollBar.isVisible} h.max=${hScrollBar.max} " +
-                    "v.visible=${vScrollBar.isVisible} v.max=${vScrollBar.max}"
-            )
-        }
-
         // ≈ diagramControl.Invalidate(ClientRectangle) del C#. Puede llegar
         // disparado por el resize de la ventana (canvasHolder) o por un cambio
         // de tamaño virtual (zoom): DIFERIDO en ambos casos (debounce 150 ms).
@@ -301,6 +293,8 @@ class DiagramControlContainer : BorderPane() {
         vScrollBar.value = clampedY.toDouble()
     }
 
+    /** ≈ vScrollBar_ValueChanged / hScrollBar_ValueChanged: actualiza el
+     *  punto virtual y programa el repintado. */
     private fun scrollbars_ValueChanged() {
         virtualPoint = KPoint(hScrollBar.value.roundToInt(), vScrollBar.value.roundToInt())
         // Coalescido: durante el pan/rueda llegan muchos cambios en un frame.

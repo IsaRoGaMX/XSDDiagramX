@@ -74,36 +74,11 @@ import java.net.URL
 import javax.swing.Icon
 import kotlin.math.max
 
-// ---------------------------------------------------------------------------
-// Filas de las tablas de la GUI (ListViewItem del C# era un string[])
-// ---------------------------------------------------------------------------
-
-/** Fila de la lista de elementos globales (listViewElements). */
-data class ElementsRow(val xsdObject: XSDObject) {
-    val name: String get() = xsdObject.name
-    val type: String get() = xsdObject.type
-    val nameSpace: String get() = xsdObject.nameSpace
-}
-
-/** Fila de la tabla de atributos (listViewAttributes). */
-data class AttributesRow(
-    val name: String,
-    val type: String,
-    val use: String,
-    val defaultValue: String,
-    val facets: String,
-    /** XSDAttribute envelvente (≈ ListViewItem.Tag del C#: los handlers lo usan). */
-    val tag: XSDAttribute? = null,
-)
-
-/** Fila del PropertyGrid del esquema (≈ propertyGridSchemaObject, tab "Element"). */
-data class PropertyRow(val name: String, val value: String)
-
-/** MainForm principal. */
+/** MainForm principal (≈ MainForm del C#: BorderPane con menú/toolbar/estado). */
 class MainForm : BorderPane() {
 
     companion object {
-        /** Referencia para los autotests (selftest de resize). */
+        /** Instancia viva (la usa SettingsForm para notificar ChangeSetting). */
         var lastForm: MainForm? = null
     }
 
@@ -139,9 +114,6 @@ class MainForm : BorderPane() {
     private lateinit var toolStripButtonRemoveAllFromDiagram: Button
     private lateinit var toolStripButtonExpandOneLevel: Button
     private lateinit var toolStripButtonShowDocumentation: ToggleButton
-    //private lateinit var toolStripButtonShowType: ToggleButton
-    //private lateinit var toolStripButtonShowReferenceBoundingBox: ToggleButton
-    //private lateinit var toolStripButtonTogglePanel: ToggleButton
     private lateinit var closeMenuItem: MenuItem
     private lateinit var saveDiagramMenuItem: MenuItem
     private lateinit var validateXMLMenuItem: MenuItem
@@ -154,6 +126,7 @@ class MainForm : BorderPane() {
     private lateinit var tabControlElement: TabPane
     private lateinit var textBoxAnnotation: TextArea
 
+    /** Valores del combo de zoom (≈ toolStripComboBoxZoom.Items del C#). */
     private val zoomValues = arrayOf(
         "10%", "50%", "60%", "75%", "80%", "85%", "90%", "95%", "100%", "105%",
         "110%", "115%", "120%", "125%", "140%", "150%", "175%", "200%", "300%"
@@ -186,6 +159,7 @@ class MainForm : BorderPane() {
     // Menús (≈ MainForm.Designer.cs)
     // ------------------------------------------------------------------
 
+    /** Construye la MenuBar (≈ MainForm.Designer.cs: menuStrip del C#). */
     private fun buildMenu() {
         recentFilesMenu = Menu("Recent Files")
 
@@ -238,6 +212,7 @@ class MainForm : BorderPane() {
     /** ≈ mruManager (crear en showOn; los ítems van bajo "Recent Files"). */
     private var mruManager: MRUManager? = null
 
+    /** Delega en el [MRUManager] vivo (si aún no hay ventana, ignora). */
     private fun addRecentFile(filenameOrUrl: String) {
         mruManager?.addRecentFile(filenameOrUrl)
     }
@@ -246,13 +221,11 @@ class MainForm : BorderPane() {
     // Barra de herramientas (con texto en vez de los iconos del C#)
     // ------------------------------------------------------------------
 
+    /** Construye la ToolBar (≈ toolStripMain del Designer: Open, combos de
+     *  elementos/zoom/alineación, botones Add/AddAll/Remove/Expand, toggle de
+     *  documentación y buscador). */
     private fun buildToolbar() {
         val openButton = IconResources.toolbarButton("16px/folder_page_white.png", "Open a schema file") { openSchema() }
-
-//        val openButton = Button("Open").apply {
-//            tooltip = Tooltip("Open a schema file")
-//            setOnAction { openSchema() }
-//        }
 
         toolStripComboBoxSchemaElement = ComboBox<XSDObject>().apply {
             prefWidth = 250.0
@@ -329,34 +302,6 @@ class MainForm : BorderPane() {
             }
         }
 
-//        toolStripButtonShowType = ToggleButton("Type").apply {
-//            tooltip = Tooltip("Show the type of the node")
-//            setOnAction {
-//                diagram.showType = isSelected
-//                updateDiagram()
-//            }
-//        }
-
-//        toolStripButtonShowReferenceBoundingBox = ToggleButton("Box").apply {
-//            tooltip = Tooltip("Show the reference bounding box")
-//            setOnAction {
-//                diagram.showBoundingBox = isSelected
-//                updateDiagram()
-//            }
-//        }
-
-//        toolStripButtonTogglePanel = ToggleButton().apply {
-//            tooltip = Tooltip("Show or hide the schema panel")
-//            //graphic = IconResources.graphic(if(isSelected) "16px/application_side_expand.png" else "16px/application_side_contract.png", 16.0)
-//            isSelected = true
-//            setOnAction {
-//                if (isSelected) showSidePanel() else hideSidePanel()
-//                // ≈ cs line 1031: Settings.Default.DisplayPanel = Checked.
-//                Settings.displayPanel = isSelected
-//                graphic = IconResources.graphic(if(isSelected) "16px/application_side_expand.png" else "16px/application_side_contract.png", 16.0)
-//            }
-//        }
-
         toolStripTextBoxSearch = TextField().apply {
             promptText = "Text to find"
             prefWidth = 180.0
@@ -377,9 +322,7 @@ class MainForm : BorderPane() {
             Separator(), Label(" Zoom "), toolStripComboBoxZoom,
             Label(" Align "), toolStripComboBoxAlignement,
             Separator(),
-            toolStripButtonShowDocumentation, /*toolStripButtonShowType,*/
-            /*toolStripButtonShowReferenceBoundingBox, toolStripButtonTogglePanel,*/
-            Separator(),
+            toolStripButtonShowDocumentation, Separator(),
             toolStripTextBoxSearch, searchButton
         )
     }
@@ -388,6 +331,9 @@ class MainForm : BorderPane() {
     // Área principal (≈ splitContainerMain + splitContainerDiagramElement)
     // ------------------------------------------------------------------
 
+    /** Construye el área central: tabs del diagrama/.xsd a la izquierda y el
+     *  panel lateral (elementos, atributos, propertyGrid, enumeraciones,
+     *  documentación) a la derecha; conecta el drag&drop de ficheros/URLs. */
     private fun buildMainArea() {
         // Panel izquierdo: pestaña "Diagram" + una pestaña por fichero .xsd.
         tabControlView = TabPane().apply {
@@ -515,6 +461,8 @@ class MainForm : BorderPane() {
         return tableColumn
     }
 
+    /** Conecta el drag&drop de la ventana (≈ MainForm_DragEnter / MainForm_DragDrop
+     *  del C#: acepta ficheros o URLs y carga el primero). */
     private fun setupDragAndDrop() {
         setOnDragOver { event: DragEvent ->
             if (event.dragboard.hasFiles() || event.dragboard.hasUrl()) {
@@ -537,6 +485,7 @@ class MainForm : BorderPane() {
     // Barra de estado (toolStripStatusLabel1 + textBoxElementPath)
     // ------------------------------------------------------------------
 
+    /** Construye la barra de estado inferior (estatus + ruta del elemento). */
     private fun buildStatusBar() {
         statusLabel = Label("Ready")
         textBoxElementPath = TextField().apply {
@@ -554,6 +503,7 @@ class MainForm : BorderPane() {
         }
     }
 
+    /** ≈ toolStripStatusLabel: texto de estado ("Ready", "Loading...", etc.). */
     private fun setStatus(text: String) {
         statusLabel.text = text
     }
@@ -562,6 +512,9 @@ class MainForm : BorderPane() {
     // Equivale a Application.Run(new MainForm())
     // ------------------------------------------------------------------
 
+    /** ≈ MainForm (ctor) + MainForm_Load + cmdline: crea la escena, aplica el
+     *  tema/icono, restaura zoom/alineación/documentación de Settings, conecta
+     *  el MRU y muestra el esquema pedido en la línea de comandos. */
     fun showOn(stage: Stage) {
         currentStage = stage
         // ≈ ctor del C# (91-94): estado inicial del diagram desde Settings
@@ -578,10 +531,6 @@ class MainForm : BorderPane() {
         // del valor por defecto (8, 1) que había antes de fase 4).
         toolStripComboBoxZoom.selectionModel.select(Settings.zoom)
         toolStripComboBoxAlignement.selectionModel.select(Settings.alignement)
-//        if (toolStripButtonTogglePanel.isSelected != Settings.displayPanel) {
-//            toolStripButtonTogglePanel.isSelected = Settings.displayPanel
-//        }
-//        if (Settings.displayPanel) showSidePanel() else hideSidePanel()
 
         // ≈ MainForm_Load (181): MRUManager persistente ("Recent Files").
         mruManager = MRUManager(
@@ -633,6 +582,7 @@ class MainForm : BorderPane() {
     // Carga (≈ LoadSchema / open / openURL / drag&drop)
     // ------------------------------------------------------------------
 
+    /** ≈ openToolStripMenuItem_Click: FileChooser con filtros .xsd y abre. */
     private fun openSchema() {
         val chooser = FileChooser().apply {
             title = "Open XSD schema"
@@ -645,6 +595,8 @@ class MainForm : BorderPane() {
         if (file != null) loadSchema(file.path)
     }
 
+    /** ≈ openURLToolStripMenuItem_Click (nace de OpenURLForm): TextInputDialog
+     *  provisional para pedir la URL del esquema. */
     private fun openSchemaUrl() {
         // ≈ OpenURLForm (fase: TextInputDialog provisional).
         val dialog = TextInputDialog("").apply {
@@ -656,14 +608,17 @@ class MainForm : BorderPane() {
         if (!url.isNullOrEmpty()) loadSchema(url)
     }
 
+    /** True mientras [loadSchema] corre en el hilo de fondo. */
+    private var isLoading = false
+
+    /** Diálogo de progreso vivo durante la carga (para el botón Cancelar). */
+    private var downloadDialog: SchemaDownloadDialog? = null
+
     /**
      * ≈ MainForm.LoadSchema(string), pero asíncrono: la descarga de dependencias
      * remotas corre en un hilo de fondo para no congelar la GUI, con un diálogo
      * modal de progreso (APPLICATION_MODAL) con botón "Cancelar".
      */
-    private var isLoading = false
-    private var downloadDialog: SchemaDownloadDialog? = null
-
     fun loadSchema(schemaFilename: String) {
         if (isLoading) return
         isLoading = true
@@ -806,6 +761,7 @@ class MainForm : BorderPane() {
         }
     }
 
+    /** True si ya hay una pestaña con el contenido de ese fichero .xsd. */
     private fun hasTabForFile(filename: String): Boolean =
         tabControlView.tabs.any { it.userData == filename }
 
@@ -1005,9 +961,8 @@ class MainForm : BorderPane() {
     }
 
     /**
-     * Núcleo de la validación ≈ el try/catch del C# (lo separa el port para
-     * el autotest selftest=validate). Devuelve los mensajes y además los deja
-     * en [validationErrorMessages].
+     * Núcleo de la validación ≈ el try/catch del C#. Devuelve los mensajes y
+     * además los deja en [validationErrorMessages].
      */
     fun validateXmlCore(xmlFilename: String): List<String> {
         validationErrorMessages.clear()
@@ -1091,6 +1046,8 @@ class MainForm : BorderPane() {
     // Diagrama: actualización / pintado (≈ UpdateDiagram / DiagramControl_Paint)
     // ------------------------------------------------------------------
 
+    /** ≈ UpdateDiagram: mide el layout del diagrama con JavaFX y ajusta el
+     *  tamaño virtual del contenedor + repinta. */
     private fun updateDiagram() {
         if (diagram.rootElements.isNotEmpty()) {
             // ≈ Diagram.Layout(g): medición de textos vía JavaFX.
@@ -1102,15 +1059,6 @@ class MainForm : BorderPane() {
                     (bbSize.height * diagram.scale).toInt()
                 )
             )
-            if (System.getProperty("xsddiagramx.fxwatch") == "1") {
-                println(
-                    "[SCROLLDBG] updateDiagram: roots=${diagram.rootElements.size} " +
-                        "bb=${diagram.boundingBox} scale=${diagram.scale}"
-                )
-                for (r in diagram.rootElements) {
-                    println("[SCROLLDBG]   root ${r.name} ${r.itemType} box=${r.boundingBox}")
-                }
-            }
         } else {
             panelDiagram.setVirtualSize(KSize(0, 0))
         }
@@ -1133,230 +1081,8 @@ class MainForm : BorderPane() {
         }
     }
 
-    /** Gatillo para el autotest selftest=scroll (equivale a pulsar "Add all"). */
-    fun selftestAddAll() = addAllToDiagram()
-
-    /** Gatillo para el autotest: equivale a pulsar "Expand 1". */
-    fun selftestExpandOne(): Boolean =
-        if (diagram.expandOneLevel()) { updateDiagram(); true } else false
-
-    /**
-     * Gatillo para el autotest selftest=settings (fase 4): cambia Settings
-     * (persistiendo en Preferences) + aplica por ChangeSetting y reporta los
-     * valores antes/después; deja todo restaurado.
-     */
-    fun selftestSettings(): String {
-        val before = "type=${diagram.showType} occ=${diagram.alwaysShowOccurence} " +
-            "compact=${diagram.compactLayoutDensity} panel=${Settings.displayPanel} " +
-            "zoom=${Settings.zoom} align=${Settings.alignement} doc=${Settings.showDocumentation}"
-
-        Settings.showType = true
-        changeSetting("ShowType")
-        Settings.alwaysShowOccurence = true
-        changeSetting("AlwaysShowOccurence")
-        val applied = "type=${diagram.showType} occ=${diagram.alwaysShowOccurence}"
-
-        // Restaurar y verificar que ChangeSetting aplica de nuevo.
-        Settings.showType = false
-        changeSetting("ShowType")
-        Settings.alwaysShowOccurence = false
-        changeSetting("AlwaysShowOccurence")
-        val restored = "type=${diagram.showType} occ=${diagram.alwaysShowOccurence}"
-
-        // Tema (nuevo): alterna a Oscuro y de vuelta para verificar el cambio
-        // en caliente (stylesheets de la Scene + variante de scrollbars +
-        // repintado del diagrama).
-        val themeBefore = Settings.theme
-        Settings.theme = "Oscuro"
-        changeSetting("Theme")
-        val themeDark = AppTheme.currentMode() == AppTheme.Mode.DARK &&
-            AppTheme.currentPalette() != AppTheme.LIGHT
-        Settings.theme = themeBefore
-        changeSetting("Theme")
-        val themeRestored = AppTheme.currentMode() == AppTheme.Mode.LIGHT &&
-            AppTheme.currentPalette() == AppTheme.LIGHT
-
-        return "before=[$before] applied=[$applied] restored=[$restored] " +
-            "theme=[before=$themeBefore dark=$themeDark restored=$themeRestored] " +
-            "(persistido en Preferences: zoom=${Settings.zoom} align=${Settings.alignement})"
-    }
-
-    /** Ejecuta el bloque en el FX Thread y bloquea al llamador (autotests). */
-    private fun <T> fxBlock(block: () -> T): T {
-        val latch = java.util.concurrent.CountDownLatch(1)
-        var result: T? = null
-        javafx.application.Platform.runLater {
-            try {
-                result = block()
-            } catch (t: Throwable) {
-                System.err.println("FXBLOCK-ERR: $t")
-            }
-            latch.countDown()
-        }
-        latch.await()
-        @Suppress("UNCHECKED_CAST")
-        return result as T
-    }
-
-    /**
-     * Autotest del tema: cambio en caliente Claro→Oscuro (la misma ruta del
-     * SettingsForm) y apertura por código de los popups de los combos
-     * (SchemaElement y Zoom), que es donde el CSS de Modena fallaba al
-     * alternar; luego restaura Claro. Devuelve el resumen del ciclo.
-     */
-    internal fun selftestTheme(): String {
-        val report = StringBuilder()
-
-        fxBlock {
-            Settings.theme = "Oscuro"
-            changeSetting("Theme")
-        }
-        Thread.sleep(500)
-        report.append("dark=").append(AppTheme.currentMode() == AppTheme.Mode.DARK)
-
-        for (combo in listOf(toolStripComboBoxSchemaElement, toolStripComboBoxZoom)) {
-            fxBlock { if (combo.items.isNotEmpty()) combo.show() }
-            Thread.sleep(800)
-            fxBlock { combo.hide() }
-            Thread.sleep(250)
-        }
-
-        fxBlock {
-            Settings.theme = "Claro"
-            changeSetting("Theme")
-        }
-        Thread.sleep(400)
-        report.append(" restored=").append(AppTheme.currentMode() == AppTheme.Mode.LIGHT)
-        return report.toString()
-    }
-
-    /**
-     * Gatillo para el autotest selftest=validate (fase 4): escribe un XML
-     * válido y otro inválido para el esquema cargado y corre el núcleo de
-     * validateXmlCore sobre ambos; devuelve el resumen de mensajes.
-     */
-    fun selftestValidate(): String? {
-        if (!schema.isLoaded()) return null
-        val tempOpencode = File(System.getProperty("java.io.tmpdir"), "opencode")
-        tempOpencode.mkdirs()
-
-        val valid = File(tempOpencode, "xsddiagramx-validate-ok.xml")
-        valid.writeText(
-            """<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <bean id="uno" class="java.lang.String">
-    <property name="texto" value="hola"/>
-  </bean>
-</beans>"""
-        )
-        val invalid = File(tempOpencode, "xsddiagramx-validate-bad.xml")
-        invalid.writeText(
-            """<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <not-a-bean/>
-</beans>"""
-        )
-
-        val report = StringBuilder()
-        try {
-            val okMessages = validateXmlCore(valid.path)
-            report.append("ok=${okMessages.size} mensajes ")
-        } catch (ex: Exception) {
-            report.append("ok-ERROR=${ex.message} ")
-        }
-        try {
-            val badMessages = validateXmlCore(invalid.path)
-            report.append("bad=${badMessages.size} mensajes")
-            if (badMessages.isNotEmpty()) report.append(" [${badMessages.first()}]")
-        } catch (ex: Exception) {
-            report.append("bad-ERROR=${ex.message ?: ex}")
-        }
-        return report.toString()
-    }
-
-    /**
-     * Gatillo para el autotest selftest=export (fase 3): construye un diagrama
-     * (Add all + expand), lo exporta a SVG/TXT/PNG junto a [basename] en la
-     * carpeta temporal y devuelve el reporte de tamaños en bytes.
-     */
-    fun selftestExport(basename: String): String {
-        selftestAddAll()
-        for (i in 1..5) {
-            if (!selftestExpandOne()) break
-        }
-        val tempOpencode = File(System.getProperty("java.io.tmpdir"), "opencode").apply { mkdirs() }
-
-        val exporter = DiagramExporter(diagram)
-        val context = JavaFxDrawingContext()
-        val report = StringBuilder()
-        for (ext in listOf("svg", "txt", "png")) {
-            val target = File(tempOpencode, "$basename.$ext")
-            try {
-                val ok = exporter.export(
-                    target.path,
-                    context,
-                    null,
-                    mapOf<String, Any?>("TextOutputFields" to emptyList<String>())
-                )
-                val size = if (ok) target.length() else -1L
-                report.append("$ext=")
-                report.append(if (size >= 0) "${size}B" else "FAILED")
-                report.append(" ")
-            } catch (t: Throwable) {
-                report.append("$ext=").append("ERROR:${t.javaClass.simpleName}").append(" ")
-                println("SELFTEST-EXPORT $ext error:")
-                t.printStackTrace()
-            }
-        }
-        return report.toString().trim()
-    }
-
-    /** Gatillo para el autotest: selecciona el nodo del diagrama con ese
-     *  nombre, abre el tab "Element" y reporta cuántas filas tiene el grid. */
-    fun selftestShowElementTab(name: String) {
-        fun walk(item: DiagramItem): DiagramItem? {
-            if (item.name == name) return item
-            for (child in item.childElements) walk(child)?.let { return it }
-            return null
-        }
-        val node = diagram.rootElements.firstNotNullOfOrNull { walk(it) }
-        if (node == null) {
-            println("SELFTEST: node '$name' not found in diagram")
-            return
-        }
-        selectDiagramElement(node, true)
-        tabControlElement.selectionModel.select(1) // tab "Element" (≈ propertyGrid)
-        println("SELFTEST: node '$name' selected; grid has ${gridSchemaObject.items.size} property rows")
-    }
-
-    /** Gatillo para el autotest: selecciona un atributo del tab "Attributes"
-     *  (≈ listViewAttributes_SelectedIndexChanged) y reporta el tab "Element". */
-    fun selftestSelectAttribute(name: String) {
-        val row = listViewAttributes.items.firstOrNull { it.name == name }
-        if (row == null) {
-            println("SELFTEST: attribute '$name' not found (attrs=${listViewAttributes.items.joinToString { it.name }})")
-            return
-        }
-        println("SELFTEST: selecting attribute '$name' (type=${row.type})")
-        listViewAttributes.selectionModel.select(row)
-        println("SELFTEST: Element tab now has ${listViewEnumerate.items.size} enumerable values")
-    }
-
     /** ≈ toolStripButtonAddAllToDiagram_Click. */
     private fun addAllToDiagram() {
-        if (System.getProperty("xsddiagramx.fxwatch") == "1") {
-            val counts = schema.elementsByName.values
-                .filterNotNull()
-                .groupingBy { it.tag?.let { t -> t::class.simpleName } ?: "null" }
-                .eachCount()
-            println("[SCROLLDBG] elementsByName.non-null=${schema.elementsByName.values.count { it != null }} " +
-                "all=${schema.elementsByName.size} tagTypes=$counts")
-            for ((k, v) in schema.elementsByName) {
-                println("[SCROLLDBG]   key='$k' tag=${v?.tag?.let { t -> t::class.simpleName }}")
-            }
-        }
         var firstDiagramItem: DiagramItem? = null
         for (xsdObject in schema.elementsByName.values) {
             if (xsdObject != null) {
@@ -1384,6 +1110,8 @@ class MainForm : BorderPane() {
     // Zoom / paneles / tabs (≈ toolStripComboBoxZoom, toggle, Tabs)
     // ------------------------------------------------------------------
 
+    /** ≈ toolStripComboBoxZoom_SelectedIndexChanged: cambia el scale del
+     *  diagrama, persiste el índice y preserva el centro virtual al escalar. */
     private fun zoom_SelectedIndexChanged() {
         val zoomString = toolStripComboBoxZoom.selectionModel.selectedItem?.replace("%", "") ?: return
         val zoom = zoomString.toIntOrNull()?.div(100.0f) ?: return
@@ -1416,19 +1144,20 @@ class MainForm : BorderPane() {
         panelDiagram.scrollTo(newVirtualCenter, true)
     }
 
+    /** ≈ toolStripButtonTogglePanel (ocultar toda la columna de panels): quita
+     *  el panel lateral del Split principal y lo expande a todo el ancho. */
     private fun hideSidePanel() {
-
-        //mainSplit.items[1].isVisible = false
         mainSplit.setDividerPosition(0, 1.0)
         mainSplit.items.removeLast()
     }
 
+    /** Reintroduce el panel lateral en el Split principal (compañero de
+     *  [hideSidePanel]). */
     private fun showSidePanel() {
-        //mainSplit.items[1].isVisible = true
-        mainSplit.setDividerPosition(0, 0.75)
         mainSplit.items.add(sidePanel)
     }
 
+    /** ≈ tabControlView_Selected (Next/Previous Tab): rota la pestaña activa. */
     private fun cycleTab(delta: Int) {
         val count = tabControlView.tabs.size
         if (count < 2) return
@@ -1436,6 +1165,7 @@ class MainForm : BorderPane() {
         tabControlView.selectionModel.select((current + delta + count) % count)
     }
 
+    /** ≈ aboutToolStripMenuItem_Click: diálogo About del port. */
     private fun showAbout() {
         Alert(Alert.AlertType.INFORMATION).apply {
             title = "About XSDDiagramX"
@@ -1450,6 +1180,7 @@ class MainForm : BorderPane() {
         }.show()
     }
 
+    /** ≈ cuadro de errores del C# (mensajes al abrir/validar): Alert de error. */
     private fun showErrorReport(schemaFilename: String, errors: List<String>) {
         Alert(Alert.AlertType.ERROR).apply {
             title = "Schema load errors"
@@ -1462,6 +1193,8 @@ class MainForm : BorderPane() {
     // Interacción con el canvas (≈ DiagramControl_MouseClick / Wheel / KeyDown)
     // ------------------------------------------------------------------
 
+    /** Conecta los callbacks del contenedor del canvas: clic (hit-test del
+     *  C#), rueda de zoom y navegación por teclado del diagrama. */
     private fun hookCanvasEvents() {
         panelDiagram.diagramMouseClick = { location ->
             // ≈ location.Offset(panelDiagram.VirtualPoint) del C#.
@@ -1582,6 +1315,7 @@ class MainForm : BorderPane() {
     // Selección / panel derecho (≈ SelectDiagramElement / SelectSchemaElement)
     // ------------------------------------------------------------------
 
+    /** ≈ SelectDiagramElement(element): sobrecarga sin scroll. */
     private fun selectDiagramElement(element: DiagramItem?) =
         selectDiagramElement(element, false)
 
@@ -1620,6 +1354,7 @@ class MainForm : BorderPane() {
         }
     }
 
+    /** Limpia el panel lateral tras deseleccionar el diagrama. */
     private fun cleanupSideSelection() {
         listViewAttributes.items.clear()
         gridSchemaObject.items.clear()
@@ -1627,10 +1362,8 @@ class MainForm : BorderPane() {
         textBoxAnnotation.text = null
     }
 
-    // ≈ propertyGridSchemaObject: tabla nombre/valor del objeto seleccionado.
-    // ------------------------------------------------------------------
-
-    /** ≈ propertyGridSchemaObject.SelectedObject = openAttrs. */
+    /** ≈ propertyGridSchemaObject.SelectedObject = openAttrs: rellena el
+     *  PropertyGrid con las propiedades bindeadas del objeto (orden alfabético). */
     private fun fillSchemaObjectGrid(openAttrs: Any?) {
         gridSchemaObject.items.clear()
         if (openAttrs == null) return
@@ -1678,6 +1411,7 @@ class MainForm : BorderPane() {
         else -> "XMLSchema." + value.javaClass.simpleName
     }
 
+    /** Minúscula el primer carácter (≈ el estilo del PropertyGrid del C#). */
     private fun String.lowerFirst(): String =
         if (isEmpty()) this else substring(0, 1).lowercase() + substring(1)
 
@@ -1796,6 +1530,8 @@ class MainForm : BorderPane() {
     // Búsqueda (≈ toolStripTextBoxSearch_KeyPress / Search)
     // ------------------------------------------------------------------
 
+    /** ≈ toolStripTextBoxSearch_KeyPress / Search: busca el texto en el
+     *  diagrama (siguiente hit), selecciona el elemento y reporta en el estado. */
     private fun search() {
         val searchedItem = diagram.search(toolStripTextBoxSearch.text)
         if (searchedItem != null) {
@@ -1823,11 +1559,6 @@ class MainForm : BorderPane() {
                 else -> {}
             }
         }
-    }
-
-    init {
-        // (El repintado al redimensionar lo hace DiagramControlContainer con sus
-        // bindings de tamaño; aquí sería redundante y hoy es lo que congelaba.)
     }
 }
 

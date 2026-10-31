@@ -200,12 +200,8 @@ Portado con tests de comportamiento equivalentes a los casos de `Tests\issues\`:
 DomainSmokeTest  → carga, indexación, includes, expansión (base + extensión),
                    substitución, layout, hit-test, búsqueda, atributos heredados,
                    documentación multi-lenguaje.
-RealSchemasTest  → esquemas reales del original: spring-beans 3.0, COLLADASchema 1.4.1,
-                   domicoudin, etc.
 OptionsTest      → parseo de la línea de comandos (fase 4).
 ```
-
-Autotests en runtime: `-Dxsddiagramx.selftest=resize|maximize|scroll|export|settings|validate`.
 
 ## Licencia recomendada para este repositorio
 

@@ -19,6 +19,9 @@ import javafx.scene.control.Menu
 import javafx.scene.control.MenuItem
 import javafx.scene.control.SeparatorMenuItem
 
+/** ≈ MRUManager del C#: mantiene la lista de ficheros recientes en
+ *  Preferences (nodo "xsddiagramx/<programa>/MRU") y compone los ítems del
+ *  menú [parentMenuItem] ("Recent Files"). */
 class MRUManager(
     private val parentMenuItem: Menu,
     nameOfProgram: String,

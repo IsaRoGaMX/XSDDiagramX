@@ -39,6 +39,8 @@ object DiagramHelpers {
     fun qualifiedNameToFullName(type: String, xmlQualifiedName: QualifiedName): String =
         "${xmlQualifiedName.namespace}:$type:${xmlQualifiedName.name}"
 
+    /** Equivale a QualifiedNameToAttributeTypeName: "name  : namespace" para
+     *  la columna "Type" de la tabla de atributos. */
     private fun qualifiedNameToAttributeTypeName(xmlQualifiedName: QualifiedName): String =
         "${xmlQualifiedName.name}  : ${xmlQualifiedName.namespace}"
 
@@ -46,6 +48,9 @@ object DiagramHelpers {
     // Atributos de un complexType (incluida la herencia)
     // ------------------------------------------------------------------
 
+    /** Equivale a ParseComplexTypeAttributes: recorre los ítems del complexType
+     *  (attribute/attributeGroup/anyAttribute) y las bases de extensión o
+     *  restricción, acumulando los XSDAttribute propios y heredados. */
     private fun parseComplexTypeAttributes(
         schema: Schema,
         nameSpace: String,
@@ -215,6 +220,8 @@ object DiagramHelpers {
         return null
     }
 
+    /** Equivale a ParseAttributeGroup: expande el attributeGroup referenciado
+     *  (xs:attributeGroup ref="...") añadiendo sus atributos listAttributes. */
     private fun parseAttributeGroup(
         schema: Schema,
         nameSpace: String,
