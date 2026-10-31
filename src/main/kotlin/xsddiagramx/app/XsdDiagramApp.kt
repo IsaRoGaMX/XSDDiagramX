@@ -37,7 +37,8 @@ class XsdDiagramApp : Application() {
         // -Dxsddiagramx.selftest.file=<xsd> carga un esquema antes de actuar.
         val selftest = System.getProperty("xsddiagramx.selftest")
         if (selftest == "resize" || selftest == "maximize" || selftest == "scroll" ||
-            selftest == "export" || selftest == "settings" || selftest == "validate"
+            selftest == "export" || selftest == "settings" || selftest == "validate" ||
+            selftest == "theme"
         ) {
             val schemaFile = System.getProperty("xsddiagramx.selftest.file")
             val mainForm = MainForm.lastForm ?: return
@@ -79,6 +80,17 @@ class XsdDiagramApp : Application() {
                             else println("SELFTEST-VALIDATE: $result")
                             javafx.application.Platform.exit()
                         }
+                    } else if (selftest == "theme") {
+                        // Autotest tema: cambio en caliente Claro→Oscuro→Claro
+                        // y popups de los combos (abiertos por código: en los
+                        // popups es donde Modena fallaba al alternar el tema).
+                        println("SELFTEST: theme roundtrip + popups de combos")
+                        try {
+                            println("SELFTEST-THEME: ${mainForm.selftestTheme()}")
+                        } catch (t: Throwable) {
+                            println("SELFTEST ERROR: $t")
+                        }
+                        javafx.application.Platform.runLater { javafx.application.Platform.exit() }
                     } else if (selftest == "scroll") {
                         println("SELFTEST: add root + expand levels to make a big diagram")
                         javafx.application.Platform.runLater {

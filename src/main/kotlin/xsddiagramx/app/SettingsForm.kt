@@ -3,42 +3,33 @@
 //
 //    Licencias del original: LGPL / MS-PL (véase LICENSE-LGPL.txt / LICENSE-MS-PL.txt)
 //
-//    Diferencias: el PropertyGrid del WinForms no existe en JavaFX. La ventana
-//    muestra en una tabla Property/Value las mismas propiedades que quedaban
-//    visibles en el PropertyGrid del C#: sólo las Browsable del Settings
-//    (AlwaysShowOccurence / ShowType / CompactLayoutDensity; DisplayPanel,
-//    Zoom, Alignement y ShowDocumentation tienen Browsable(false) y el
-//    PropertyGrid del original tampoco las listaba). Cada cambio dispara
-//    ChangeSetting en el MainForm (≈ propertyGrid1_PropertyValueChanged).
+//    Diferencias: el PropertyGrid del WinForms no existe en JavaFX; a petición
+//    del usuario la ventana es un FORMULARIO (GridPane) con un control por
+//    setting en vez de la tabla Property/Value anterior. Contiene las mismas
+//    propiedades Browsable del C# (AlwaysShowOccurence / ShowType /
+//    CompactLayoutDensity) más el campo "Tema" (adición del port, consume
+//    xsddiagramx.AppTheme). Cada cambio dispara ChangeSetting en el MainForm
+//    (≈ propertyGrid1_PropertyValueChanged).
+//
+//    Tema: al cambiar entre Claro/Oscuro se aplican en caliente los
+//    stylesheets al propio formulario y a la ventana principal.
 package xsddiagramx.app
 
-import javafx.beans.property.SimpleBooleanProperty
+import javafx.collections.FXCollections
 import javafx.geometry.Insets
 import javafx.scene.Scene
+import javafx.scene.control.CheckBox
+import javafx.scene.control.ComboBox
 import javafx.scene.control.Label
-import javafx.scene.control.TableColumn
-import javafx.scene.control.TableView
-import javafx.scene.control.cell.PropertyValueFactory
+import javafx.scene.layout.ColumnConstraints
+import javafx.scene.layout.GridPane
+import javafx.scene.layout.Priority
 import javafx.stage.Stage
-
-/** Fila del PropertyGrid (≈ PropertyItem del WinForms, sólo booleans). */
-class SettingRow(
-    /** ≈ nombre de la propiedad (con él se llama a ChangeSetting). */
-    val name: String,
-    /** ≈ DisplayName del atributo del Settings. */
-    val label: String,
-    read: () -> Boolean,
-    write: (Boolean) -> Unit,
-) {
-    /** Escritura al togglear (≈ el editor del grid). */
-    val value = SimpleBooleanProperty(read()).apply {
-        addListener { _, _, newValue -> write(newValue) }
-    }
-}
+import xsddiagramx.AppTheme
 
 /**
- * ≈ SettingsForm: ventana no modal con el "PropertyGrid" del Settings
- * (FormStartPosition.CenterParent → se centra sobre el owner).
+ * ≈ SettingsForm: ventana no modal con el formulario del Settings.
+ * (FormStartPosition.CenterParent → se centra sobre el owner.)
  */
 class SettingsForm(private val owner: Stage) : Stage() {
 
@@ -46,80 +37,82 @@ class SettingsForm(private val owner: Stage) : Stage() {
         title = "Settings"
         isResizable = true
 
-        val rows = listOf(
-            SettingRow("AlwaysShowOccurence", "Always Show Occurence",
-                read = { Settings.alwaysShowOccurence },
-                write = {
-                    Settings.alwaysShowOccurence = it
-                    MainForm.lastForm?.changeSetting("AlwaysShowOccurence")
-                }),
-            SettingRow("ShowType", "Show Type",
-                read = { Settings.showType },
-                write = {
-                    Settings.showType = it
-                    MainForm.lastForm?.changeSetting("ShowType")
-                }),
-            SettingRow("CompactLayoutDensity", "CompactLayoutDensity",
-                read = { Settings.compactLayoutDensity },
-                write = {
-                    Settings.compactLayoutDensity = it
-                    MainForm.lastForm?.changeSetting("CompactLayoutDensity")
-                }),
-        )
+        // ≈ el editor del PropertyGrid: al cambiar un control, persistir el
+        // setting y notificar al MainForm (ChangeSetting).
+        fun onSetting(name: String) {
+            MainForm.lastForm?.changeSetting(name)
+        }
 
-        val nameColumn = TableColumn<SettingRow, String>("Property")
-        nameColumn.cellValueFactory = PropertyValueFactory("label")
-        nameColumn.prefWidth = 300.0
-
-        val valueColumn = TableColumn<SettingRow, Boolean>("Value")
-        // ≈ el editor booleano del PropertyGrid: CheckBox directo en la celda
-        // (CheckBoxTableCell exige tabla editable; aquí el toggle es 1 clic).
-        valueColumn.cellFactory = javafx.util.Callback {
-            object : javafx.scene.control.TableCell<SettingRow, Boolean>() {
-                val box = javafx.scene.control.CheckBox()
-                init {
-                    graphic = box
-                    // El CheckBox no recibe el ratón (mouseTransparent): el
-                    // toggle 1-clic lo hace la celda (≈ el PropertyGrid del C#,
-                    // que editaba el boolean al clicar la celda).
-                    box.isMouseTransparent = true
-                    setOnMouseClicked {
-                        val row = tableRow.item as? SettingRow
-                        if (row != null) {
-                            row.value.set(!row.value.get())
-                            box.isSelected = row.value.get()
-                        }
-                    }
-                }
-
-                override fun updateItem(item: Boolean?, empty: Boolean) {
-                    super.updateItem(item, empty)
-                    text = null
-                    // El item booleano de la celda no se usa (sin
-                    // cellValueFactory): la autoridad es la fila (SettingRow).
-                    val row = tableRow.item as? SettingRow
-                    if (empty || row == null) {
-                        box.isDisable = true
-                        box.isSelected = false
-                        return
-                    }
-                    box.isDisable = false
-                    box.isSelected = row.value.get()
-                }
+        val chkAlwaysShowOccurence = CheckBox("Always show the occurrence").apply {
+            isSelected = Settings.alwaysShowOccurence
+            setOnAction {
+                Settings.alwaysShowOccurence = isSelected
+                onSetting("AlwaysShowOccurence")
             }
         }
-        valueColumn.prefWidth = 90.0
 
-        val grid = TableView<SettingRow>().apply {
-            columns.addAll(nameColumn, valueColumn)
-            items.addAll(rows)
-            columnResizePolicy = TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN
-            placeholder = Label("No settings displayed")
+        val chkShowType = CheckBox("Show the type").apply {
+            isSelected = Settings.showType
+            setOnAction {
+                Settings.showType = isSelected
+                onSetting("ShowType")
+            }
+        }
+
+        val chkCompactLayoutDensity = CheckBox("Compact layout density").apply {
+            isSelected = Settings.compactLayoutDensity
+            setOnAction {
+                Settings.compactLayoutDensity = isSelected
+                onSetting("CompactLayoutDensity")
+            }
+        }
+
+        // Campo "Tema": Claro (esquema del original) / Oscuro (grises neutros).
+        val comboTheme = ComboBox(FXCollections.observableArrayList(AppTheme.Mode.entries)).apply {
+            setCellFactory { _ -> ThemeListCell() }
+            setButtonCell(ThemeListCell())
+            value = AppTheme.currentMode()
+            maxWidth = Double.MAX_VALUE
+            setOnAction {
+                val mode = selectionModel.selectedItem ?: return@setOnAction
+                if (mode == AppTheme.currentMode()) return@setOnAction
+                Settings.theme = mode.label
+                // Cambio en caliente: este formulario y la ventana principal.
+                AppTheme.applyTo(scene)
+                onSetting("Theme")
+            }
+        }
+
+        val grid = GridPane().apply {
+            hgap = 12.0
+            vgap = 10.0
+            padding = Insets(14.0)
+            columnConstraints.addAll(
+                ColumnConstraints().apply { minWidth = 190.0 },
+                ColumnConstraints(200.0).apply { hgrow = Priority.SOMETIMES }
+            )
+            addRow(0, Label("Always Show Occurence"), chkAlwaysShowOccurence)
+            addRow(1, Label("Show Type"), chkShowType)
+            addRow(2, Label("CompactLayoutDensity"), chkCompactLayoutDensity)
+            addRow(3, Label("Tema"), comboTheme)
+            GridPane.setHgrow(chkAlwaysShowOccurence, Priority.ALWAYS)
+            GridPane.setHgrow(chkShowType, Priority.ALWAYS)
+            GridPane.setHgrow(chkCompactLayoutDensity, Priority.ALWAYS)
+            GridPane.setHgrow(comboTheme, Priority.ALWAYS)
         }
 
         val root = javafx.scene.layout.BorderPane(grid)
         root.padding = Insets(8.0)
-        scene = Scene(root, 520.0, 438.0)
+        scene = Scene(root, 460.0, 260.0)
+        AppTheme.applyTo(scene)
         initOwner(owner)
+    }
+
+    /** Celda del combo "Tema": muestra la etiqueta del modo (Claro/Oscuro). */
+    private class ThemeListCell : javafx.scene.control.ListCell<AppTheme.Mode>() {
+        override fun updateItem(item: AppTheme.Mode?, empty: Boolean) {
+            super.updateItem(item, empty)
+            text = item?.label
+        }
     }
 }

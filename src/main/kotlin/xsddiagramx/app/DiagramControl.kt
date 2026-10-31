@@ -26,8 +26,8 @@ class DiagramControl : Canvas() {
         val d = diagram ?: return
 
         val g = graphicsContext2D
-        // Fondo blanco (≈ BackColor del UserControl).
-        g.fill = javafx.scene.paint.Color.WHITE
+        // Fondo del tema (≈ BackColor del UserControl; Claro = blanco).
+        g.fill = xsddiagramx.AppTheme.currentPalette().background
         g.fillRect(0.0, 0.0, width, height)
         g.save()
         g.translate(-virtualPoint.x.toDouble(), -virtualPoint.y.toDouble())

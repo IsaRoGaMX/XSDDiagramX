@@ -1,4 +1,4 @@
-# XSDDiagramX — Port Kotlin/JavaFX de XSD Diagram (fases 1-4: dominio + GUI + exportación/impresión + Settings/MRU/CLI/validación)
+# XSDDiagramX - Port Kotlin/JavaFX de XSD Diagram (fases 1-4: dominio + GUI + exportación + Settings/MRU/CLI/validación; fase 5: formulario Settings + tema Claro/Oscuro; impresión eliminada a petición del usuario)
 
 > Attribution notice: Este repositorio es un port derivado del proyecto original
 > [XSD Diagram](https://github.com/dgis/xsddiagram), desarrollado por
@@ -70,15 +70,42 @@ documentación/tipo/bounding-box, panel derecho con elementos/atributos/
 enumeraciones + documentación, pestañas con el contenido de cada .xsd, barra
 de estado con el path del elemento, drag & drop de ficheros).
 
-**Fase 3 completada**: exportación (Save Diagram As: SVG/TXT/CSV/PNG/JPG) e
-impresión (Page/Print/Print preview) con los ports de `DiagramSvgRenderer`,
-`DiagramTxtRenderer`, `DiagramExporter` y `DiagramPrinter`; icono de
-aplicación en title bar/taskbar (Dock de macOS) vía `Stage.icons`.
+**Fase 3 completada**: exportación (Save Diagram As: SVG/TXT/CSV/PNG/JPG) con
+los ports de `DiagramSvgRenderer`, `DiagramTxtRenderer` y `DiagramExporter`;
+icono de aplicación en title bar/taskbar (Dock de macOS) vía `Stage.icons`.
+(Nota: impresión/Page/Print Preview se ELIMINARON a petición del usuario.)
 
 **Fase 4 completada**: Settings persistentes (`java.util.prefs`), SettingsForm
 (el "PropertyGrid" del Settings), MRUManager persistente (Recent Files),
 parseo de la línea de comandos (`Options`) y validación de XML
 (Validate XML Files...).
+
+**Fase 5 en curso (mejoras de la GUI)**:
+
+- **SettingsForm como formulario**: a petición del usuario, la ventana
+  Settings pasó de la tabla Property/Value (equivalente del `PropertyGrid`)
+  a un formulario (`GridPane` con un control por setting). Cambia
+  `app/SettingsForm.kt`; el MainActivity.ChangeSetting del port
+  (`MainForm.changeSetting`) se sigue usando tal cual.
+- **Tema Claro / Oscuro** (adición del port, no existe en el C#): campo
+  "Tema" en Settings; el valor se persiste (nodo Preferences,
+  clave `Theme`). El claro reproduce el esquema del original (diagrama
+  blanco con tinta negra, selección 0xA6CAF0; UI Modena por defecto). El
+  oscuro usa una paleta neutra de contraste moderado: `xsddiagramx/AppTheme.kt`
+  define la paleta de dibujo del diagrama y `theme-dark.css`/`scrollbar-dark.css`
+  (resources) sólo cambian las variables de color de Modena — los controles
+  conservan su forma. Cambio en caliente: al elegir el tema se re-aplican los
+  stylesheets a la ventana principal, al SettingsForm y al diálogo de carga de
+  esquema, y el diagrama se repinta (`changeSetting("Theme")`). Además se
+  instala como user agent stylesheet vía `StyleManager` (JavaFX interno; flag
+  `--add-exports javafx.graphics/com.sun.javafx.css=ALL-UNNAMED` en el build,
+  ya configurado) para que los POPUPS de combos/menús —Escenes aparte que no
+  heredan los stylesheets de la ventana— reciban el tema y no salten warnings
+  del `modena.bss`. Las exportaciones PNG/JPG y SVG/TXT dibujan SIEMPRE con la
+  paleta clara ("papel" blanco).
+  Capturas: `screenshots/28...33` (formulario y ventana en ambos temas) y
+  `37-popup-ua-dark.png` (popup del combo en oscuro). «Las opciones Page/
+  Print Preview/Print se ELIMINARON a petición del usuario.»
 
 ## Ejecutar
 
@@ -112,8 +139,8 @@ src\main\kotlin\xsddiagram\
 │       ├── DiagramItem.cs                  │       ├── DiagramItem.kt
 │       ├── Diagram.cs                      │       └── Diagram.kt
 │       ├── DiagramRenderer/Gdi/Svg/Txt.cs   │       ├── DiagramRenderer.kt (base, fase 3)
-│       │   + DiagramExporter/Printer .cs   │       ├── DiagramSvgRenderer.kt / DiagramTxtRenderer.kt (fase 3)
-│       │                                   │       ├── DiagramExporter.kt / DiagramPrinter.kt (fase 3)
+│       │   + DiagramExporter.cs            │       ├── DiagramSvgRenderer.kt / DiagramTxtRenderer.kt (fase 3)
+│       │                                   │       ├── DiagramExporter.kt (fase 3)
 │       │                                   │       └── javafx\DiagramJavaFxRenderer.kt (≈ GDI, fase 2)
 │       │                                   │
 ├── MainForm.cs / DiagramControl*.cs        ├── app\MainForm.kt, DiagramControl(Container).kt (fase 2)
@@ -152,11 +179,11 @@ Portado con tests de comportamiento equivalentes a los casos de `Tests\issues\`:
 | `DiagramTxtRenderer.cs` | `rendering/DiagramTxtRenderer.kt` (fase 3) | TXT (tabulado) y CSV (`isCSV`): cabecera con los `TextOutputFields` y filas PATH/NAME/TYPE/NAMESPACE/COMMENT/SEQ/LASTCHILD/... |
 | `DiagramSvgRenderer.cs` | `rendering/DiagramSvgRenderer.kt` (fase 3) | SVG texto: líneas de herencia/referencia/grupos, clipping docs, etc. |
 | `DiagramExporter.cs` | `rendering/DiagramExporter.kt` (fase 3) | Export por extensión: PNG/JPG con canvas offscreen JavaFX. |
-| `DiagramPrinter.cs` + PageSetup/Print/PrintPreview del WinForms | `rendering/DiagramPrinter.kt` (fase 3) | `PrinterJob` (showPageSetupDialog/showPrintDialog); paginación port de `OnPrintPage`. |
+| `DiagramPrinter.cs` + PageSetup/Print/PrintPreview del WinForms | — (ELIMINADO a petición del usuario) | El menú File ya no ofrece Page/Print/Print Preview (antes fase 3, `PrinterJob`). |
 | `Options.cs` | `Options.kt` (fase 4) | Parseo 1:1 de la línea de comandos (`-o/-os/-r/-e/-d/-z/-y/-u/-p/-f/-a/-no-gui`...). |
 | `Settings.cs` (+ `Properties\Settings.Designer.cs`) | `app/Settings.kt` (fase 4) | Persistencia con `java.util.prefs.Preferences` (nodo `xsddiagram/settings`). |
 | `MRUManager.cs` | `app/MRUManager.kt` (fase 4) | Comportamiento 1:1 del MRU. |
-| `SettingsForm.cs` / `SettingsForm.Designer.cs` | `app/SettingsForm.kt` (fase 4) | PropertyGrid equivalente para JavaFX. |
+| `SettingsForm.cs` / `SettingsForm.Designer.cs` | `app/SettingsForm.kt` (fase 4; formulario desde fase 5) | Formulario `GridPane` (antes tabla Property/Value); añade el campo "Tema" del port. |
 | `validateXMLFileToolStripMenuItem_Click` (en `MainForm.cs`) | `app/MainForm.kt` `validateXMLFile()` + `validateXmlCore()` (fase 4) | Validación con `javax.xml.validation` del JDK. |
 
 ### Simplificaciones deliberadas estructurales

@@ -1,0 +1,66 @@
+/*
+ * Tema Oscuro de XSDDiagramX (petición del usuario): paleta neutra de
+ * contraste moderado. No redefine estilos de controles: sólo las variables
+ * de color de Modena (los controles conservan su forma). Se agrega a la
+ * Scene desde xsddiagramx.AppTheme.applyTo().
+ *
+ * Referencias (valores de Modena con -fx-base gris medio):
+ *   -fx-base:                     lienzo común (botones, menús, toolbar)
+ *   -fx-background:               zona de fondo (ventana, paneles)
+ *   -fx-control-inner-background: interior de TextField/ComboBox/ListView
+ *   -fx-accent / -fx-focus-color: selección/foco (azul acero apagado)
+ *
+ * NOTA (bugfix): NO se redefine -fx-color a mano y los colores de texto /
+ * selección van planos (sin ladder/derive): los ladders del modena.bss
+ * binario no re-evalúan con valores externos y en caliente saltaba
+ * "Could not resolve -fx-text-background-color" + ClassCastException
+ * (regla *.list-cell y *.combo-box-popup...list-cell:hover:filled:selected).
+ */
+/*
+ * Variables: en ".root" (escena normal) y TAMBIÉN en los contenedores raíz
+ * de los popups (".combo-box-popup" y ".context-menu") y en ".tooltip":
+ * los popups de los combos/menús son Scenes aparte SIN clase "root", así
+ * que las definiciones de .root no les llegan y en Modena fallaban los
+ * lookups (ála CssStyleHelper "Could not resolve" + ClassCastException en
+ * *.list-cell) y el popup quedaba claro en tema oscuro.
+ */
+.root, .combo-box-popup, .context-menu, .tooltip {
+    -fx-base: #37393d;
+    -fx-background: #2e3033;
+    -fx-control-inner-background: #33363a;
+    -fx-control-inner-background-alt: #3b3e42;
+
+    /* Texto/selección planos; en claro Modena deriva estos, aquí fijos. */
+    -fx-text-background-color: #d9dbdd;
+    -fx-text-fill: #d9dbdd;
+    -fx-text-inner-color: #d9dbdd;
+    -fx-mid-text-color: #a7abaf;
+    -fx-light-text-color: #f0f2f4;
+    -fx-dark-text-color: #17181a;
+    -fx-prompt-text-fill: #8e9296;
+    -fx-selection-bar: #4a6385;
+    -fx-selection-bar-non-focused: #46494d;
+    -fx-selection-bar-text: #f4f6f8;
+
+    -fx-accent: #5b87b7;
+    -fx-focus-color: #5b87b7;
+    -fx-faint-focus-color: rgba(91, 135, 183, 0.25);
+}
+
+/*
+ * Barrera para las reglas de Modena con lookup fallido: las reglas
+ * ".list-cell" del modena.bss BINARIO (ladder de -fx-text-background-color
+ * y la regla :hover:filled:selected del popup de los combos no re-resuelven
+ * al aplicar el stylesheet en caliente ( CssStyleHelper.calculateValue
+ * "Could not resolve" + ClassCastException). Reglas literales que las
+ * sombrean (las de scene ganan a las user-agent).
+ */
+.list-cell {
+    -fx-text-fill: #d9dbdd;
+    -fx-background-color: #33363a;
+}
+
+.combo-box-popup > *.list-view > *.virtual-flow > *.clipped-container > *.sheet > *.list-cell:hover:filled:selected {
+    -fx-background-color: #4a6385;
+    -fx-text-fill: #f4f6f8;
+}

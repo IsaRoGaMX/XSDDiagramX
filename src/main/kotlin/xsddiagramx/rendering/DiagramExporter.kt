@@ -130,9 +130,11 @@ class DiagramExporter(private val diagram: Diagram) {
     private fun savePngJpg(stream: OutputStream, width: Int, height: Int, format: String) {
         val canvas = javafx.scene.canvas.Canvas(width.toDouble(), height.toDouble())
         val g = canvas.graphicsContext2D
+        // El exportado es un documento: siempre "papel" blanco (paleta clara),
+        // aunque la app esté en tema Oscuro.
         g.fill = javafx.scene.paint.Color.WHITE
         g.fillRect(0.0, 0.0, canvas.width, canvas.height)
-        DiagramJavaFxRenderer(g).render(diagram)
+        DiagramJavaFxRenderer(g, xsddiagramx.AppTheme.LIGHT).render(diagram)
 
         // snapshot → BufferedImage (TYPE_INT_RGB para JPEG sin alpha).
         val snapshot = canvas.snapshot(null, null)

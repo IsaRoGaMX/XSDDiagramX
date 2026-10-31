@@ -50,10 +50,15 @@ class DiagramControlContainer : BorderPane() {
     private var virtualSize = KSize(10, 10)
 
     companion object {
-        /** CSS de las scrollbars (track/thumb visibles). */
+        /** CSS de las scrollbars (track/thumb visibles), por tema. */
         private val css_scrollbar: String? by lazy {
             DiagramControlContainer::class.java
                 .getResource("/xsddiagramx/app/scrollbar.css")
+                ?.toExternalForm()
+        }
+        private val css_scrollbar_dark: String? by lazy {
+            DiagramControlContainer::class.java
+                .getResource("/xsddiagramx/app/scrollbar-dark.css")
                 ?.toExternalForm()
         }
     }
@@ -91,11 +96,9 @@ class DiagramControlContainer : BorderPane() {
 
         // Estilo: las barras por defecto de Modena son casi invisibles sobre el
         // lienzo (track claro y thumb gris pálido): el usuario reportó que
-        // "nunca aparecían". Track gris + thumb oscuro bien visible.
-        val cssUrl = css_scrollbar
-        System.err.println("[SCROLLDBG] scrollbar.css = $cssUrl")
-        if (cssUrl != null) stylesheets.add(cssUrl)
-        else System.err.println("[SCROLLDBG] OJO: scrollbar.css NO encontrado en el classpath")
+        // "nunca aparecían". Track gris + thumb oscuro bien visible. La
+        // variante (claro/oscuro) la elige applyTheme() según el tema activo.
+        applyTheme()
 
         // El Canvas NO es "resizable" en JavaFX: StackPane no lo estira por su
         // cuenta, así que se enlaza explícitamente al tamaño del holder (en
@@ -220,6 +223,15 @@ class DiagramControlContainer : BorderPane() {
     // ------------------------------------------------------------------
     // Scrollbars (≈ LayoutScrollBars / Clear / ScrollTo)
     // ------------------------------------------------------------------
+
+    /** Cambia el CSS de las scrollbars según el tema activo (≈ un
+     *  "theme switch": sólo cambia el color, no la forma de la barra). */
+    fun applyTheme() {
+        val dark = xsddiagramx.AppTheme.currentMode() == xsddiagramx.AppTheme.Mode.DARK
+        val wanted = if (dark) css_scrollbar_dark else css_scrollbar
+        stylesheets.removeAll { it.contains("scrollbar.css") || it.contains("scrollbar-dark.css") }
+        if (wanted != null) stylesheets.add(wanted)
+    }
 
     fun clear() {
         hScrollBar.value = 0.0

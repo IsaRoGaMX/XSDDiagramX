@@ -70,6 +70,14 @@ object Settings {
             node.putBoolean("CompactLayoutDensity", value)
         }
 
+    /** Tema de la aplicación ("Claro"/"Oscuro"). Editable en el SettingsForm;
+     *  lo consume xsddiagramx.AppTheme (no existía en el C#: adición del port). */
+    var theme: String = node.get("Theme", "Claro")
+        set(value) {
+            field = value
+            node.put("Theme", value)
+        }
+
     /** ≈ Settings.Default.Save() (se llama al cerrar el MainForm). */
     fun save() {
         try {

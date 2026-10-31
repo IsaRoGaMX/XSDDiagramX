@@ -1,0 +1,30 @@
+/* Scrollbars del diagrama — variante del tema Oscuro (equivalente de
+   scrollbar.css; misma estructura, colores neutros oscuros). */
+.diagram-scrollbar .track {
+    -fx-background-color: #2a2c2e;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+.diagram-scrollbar .thumb {
+    -fx-background-color: #6b6e71;
+    -fx-background-insets: 2;
+    -fx-background-radius: 3;
+}
+
+.diagram-scrollbar .thumb:hover,
+.diagram-scrollbar .thumb:pressed {
+    -fx-background-color: #7e8184;
+}
+
+.diagram-scrollbar .decrement-button,
+.diagram-scrollbar .increment-button {
+    -fx-background-color: #3a3c3f;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+.diagram-scrollbar .decrement-arrow,
+.diagram-scrollbar .increment-arrow {
+    -fx-background-color: #b9bbbd;
+}

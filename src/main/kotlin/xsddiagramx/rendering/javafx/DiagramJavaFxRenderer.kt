@@ -27,20 +27,27 @@ import xsddiagramx.rendering.FontDescription
 import xsddiagramx.rendering.KPoint
 import xsddiagramx.rendering.KRectangle
 import xsddiagramx.rendering.KSize
+import xsddiagramx.AppTheme
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-class DiagramJavaFxRenderer(private val gc: GraphicsContext) {
+class DiagramJavaFxRenderer(
+    private val gc: GraphicsContext,
+    /** Paleta del tema; por defecto la del tema activo. Los documentos
+     *  (exportación PNG/JPG) pasan AppTheme.LIGHT para
+     *  dibujar "papel" blanco aunque la app esté en tema Oscuro. */
+    private val palette: AppTheme.Palette = AppTheme.currentPalette(),
+) {
 
     // ------------------------------------------------------------------
-    // Colores (iguales que el C#)
+    // Colores (tema Claro = esquema del C#; el Oscuro sale de AppTheme)
     // ------------------------------------------------------------------
 
-    private val backgroundColor = Color.WHITE
-    private val selectedBackground = Color(0xA6 / 255.0, 0xCA / 255.0, 0xF0 / 255.0, 1.0)
-    private val foreground = Color.BLACK
-    private val expandBoxBackground = Color.WHITE
-    private val gray = Color.GRAY
+    private val backgroundColor = palette.background
+    private val selectedBackground = palette.selectedBackground
+    private val foreground = palette.foreground
+    private val expandBoxBackground = palette.expandBoxBackground
+    private val gray = palette.disabled
 
     // ------------------------------------------------------------------
     // Render del diagrama completo (con culling por clip)
@@ -70,9 +77,7 @@ class DiagramJavaFxRenderer(private val gc: GraphicsContext) {
 
     fun render(drawingItem: DiagramItem, clipRectangle: KRectangle? = null) {
         if (drawingItem.diagram.showBoundingBox) {
-            val colorLevel = 255 - drawingItem.depth * 8
-            val boxColor = Color.rgb(colorLevel, colorLevel, colorLevel)
-            gc.fill = boxColor
+            gc.fill = boundingBoxColor(drawingItem.depth)
             gc.stroke = foregroundColor(drawingItem)
             val scaledBoundingBox = drawingItem.scaleRectangle(drawingItem.boundingBox)
             fillRectBox(scaledBoundingBox)
@@ -492,7 +497,15 @@ class DiagramJavaFxRenderer(private val gc: GraphicsContext) {
     // Helpers de dibujo
     // ------------------------------------------------------------------
 
-    /** Fondo: blanco; si seleccionado 0xA6CAF0 (Color.FromArgb en el C#). */
+    /** ≈ 255 - depth*8 del C#: escalones de gris para el bounding box. En el
+     *  tema Oscuro se escalona desde el fondo oscuro (0x2A + depth*8) para no
+     *  "quemar" la pantalla con cajas casi blancas. */
+    private fun boundingBoxColor(depth: Int): Color {
+        val level = if (palette == AppTheme.LIGHT) 255 - depth * 8 else 0x2A + depth * 8
+        return Color.rgb(level, level, level)
+    }
+
+    /** Fondo del tema; si el nodo está seleccionado, el color de selección. */
     private fun resolveBackground(item: DiagramItem): Color =
         if (item.isSelected) selectedBackground else backgroundColor
 

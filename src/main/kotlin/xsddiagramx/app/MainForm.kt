@@ -52,6 +52,7 @@ import javafx.scene.layout.VBox
 import javafx.stage.FileChooser
 import javafx.stage.Stage
 import xsddiagramx.AppLogo
+import xsddiagramx.AppTheme
 import xsddiagramx.DiagramHelpers
 import xsddiagramx.Options
 import xsddiagramx.parsing.Schema
@@ -64,7 +65,6 @@ import xsddiagramx.rendering.DiagramExporter
 import xsddiagramx.rendering.DiagramHitTestRegion
 import xsddiagramx.rendering.DiagramItem
 import xsddiagramx.rendering.DiagramItemType
-import xsddiagramx.rendering.DiagramPrinter
 import xsddiagramx.rendering.KPoint
 import xsddiagramx.rendering.KSize
 import xsddiagramx.rendering.javafx.JavaFxDrawingContext
@@ -144,8 +144,6 @@ class MainForm : BorderPane() {
     //private lateinit var toolStripButtonTogglePanel: ToggleButton
     private lateinit var closeMenuItem: MenuItem
     private lateinit var saveDiagramMenuItem: MenuItem
-    private lateinit var printPreviewMenuItem: MenuItem
-    private lateinit var printMenuItem: MenuItem
     private lateinit var validateXMLMenuItem: MenuItem
     private lateinit var recentFilesMenu: Menu
 
@@ -209,19 +207,9 @@ class MainForm : BorderPane() {
             MenuItem("Save Diagram _As...").apply {
                 setOnAction { saveDiagramAs() }
             }.also { saveDiagramMenuItem = it },
-            SeparatorMenuItem(),
-            // ≈ pageToolStripMenuItem / printPreviewToolStripMenuItem /
-            //   printToolStripMenuItem del C# (el PageSetup no se deshabilita
-            //   en UpdateActionsState del original).
-            MenuItem("_Page...").apply {
-                setOnAction { printPageSetup() }
-            },
-            MenuItem("Print Pre_view...").apply {
-                setOnAction { printDiagramPreview() }
-            }.also { printPreviewMenuItem = it },
-            MenuItem("_Print...").apply {
-                setOnAction { printDiagram(true) }
-            }.also { printMenuItem = it },
+            // Las opciones Page / Print Preview / Print del menú File del C#
+            // se ELIMINAN a petición del usuario (no imprime ni previsualiza;
+            // la exportación a imagen queda en "Save Diagram As...").
             SeparatorMenuItem(),
             MenuItem("E_xit").apply { setOnAction { Platform.exit() } }
         )
@@ -605,6 +593,7 @@ class MainForm : BorderPane() {
 
         stage.title = originalTitle
         stage.scene = Scene(this, 1024.0, 768.0)
+        AppTheme.applyTo(stage.scene)
         stage.icons.add(AppLogo.applicationImage())
         AppLogo.applyDockIcon()
         stage.show()
@@ -851,18 +840,13 @@ class MainForm : BorderPane() {
         closeMenuItem.isDisable = !isSchemaLoaded
         // ≈ validateXMLFileToolStripMenuItem del C#.
         validateXMLMenuItem.isDisable = !isSchemaLoaded
-        // ≈ saveDiagram/printPreview/print del C# (page no se deshabilita).
+        // ≈ saveDiagram del C# (Page/PrintPreview/Print eliminados del menú).
         saveDiagramMenuItem.isDisable = !isSchemaLoaded
-        printPreviewMenuItem.isDisable = !isSchemaLoaded
-        printMenuItem.isDisable = !isSchemaLoaded
     }
 
     // ------------------------------------------------------------------
-    // Exportación / impresión (≈ SaveDiagramAs / Page / PrintPreview / Print)
+    // Exportación (≈ SaveDiagramAs; impresión no portada a lápiz final)
     // ------------------------------------------------------------------
-
-    /** ≈ _diagramPrinter del C# (se crea perezosamente en el primer uso). */
-    private var diagramPrinter: DiagramPrinter? = null
 
     /**
      * ≈ saveDiagramToolStripMenuItem_Click: FileChooser con los mismos filtros
@@ -925,47 +909,6 @@ class MainForm : BorderPane() {
         }.show()
     }
 
-    /** ≈ pageToolStripMenuItem_Click. */
-    private fun printPageSetup() {
-        try {
-            val printer = getDiagramPrinter()
-            printer.pageSetup(currentStage)
-        } catch (ex: Exception) {
-            showMessageBox(ex.message ?: ex.toString())
-        }
-    }
-
-    /** ≈ printPreviewToolStripMenuItem_Click. */
-    private fun printDiagramPreview() {
-        try {
-            val printer = getDiagramPrinter()
-            printer.printPreview(currentStage)
-        } catch (ex: Exception) {
-            showMessageBox(ex.message ?: ex.toString())
-        }
-    }
-
-    /** ≈ printToolStripMenuItem_Click (el C# pasaba `Options.IsRunningOnMono` como showDialog=false en Mono). */
-    private fun printDiagram(showDialog: Boolean) {
-        try {
-            val printer = getDiagramPrinter()
-            printer.print(showDialog, currentStage)
-        } catch (ex: Exception) {
-            showMessageBox(ex.message ?: ex.toString())
-        }
-    }
-
-    private fun getDiagramPrinter(): DiagramPrinter {
-        var printer = diagramPrinter
-        if (printer == null) {
-            printer = DiagramPrinter(JavaFxDrawingContext())
-            diagramPrinter = printer
-        }
-        printer.documentName = "XSD Document"
-        printer.setDiagram(diagram)
-        return printer
-    }
-
     // ------------------------------------------------------------------
     // Settings (≈ settingsToolStripMenuItem_Click + ChangeSetting)
     // ------------------------------------------------------------------
@@ -1006,6 +949,13 @@ class MainForm : BorderPane() {
             }
             "CompactLayoutDensity" -> {
                 diagram.compactLayoutDensity = Settings.compactLayoutDensity
+                updateDiagram()
+            }
+            "Theme" -> {
+                // Cambio en caliente: stylesheet del tema en esta ventana,
+                // variante de las scrollbars y repintado del diagrama.
+                currentStage?.scene?.let { AppTheme.applyTo(it) }
+                panelDiagram.applyTheme()
                 updateDiagram()
             }
         }
@@ -1213,8 +1163,71 @@ class MainForm : BorderPane() {
         changeSetting("AlwaysShowOccurence")
         val restored = "type=${diagram.showType} occ=${diagram.alwaysShowOccurence}"
 
+        // Tema (nuevo): alterna a Oscuro y de vuelta para verificar el cambio
+        // en caliente (stylesheets de la Scene + variante de scrollbars +
+        // repintado del diagrama).
+        val themeBefore = Settings.theme
+        Settings.theme = "Oscuro"
+        changeSetting("Theme")
+        val themeDark = AppTheme.currentMode() == AppTheme.Mode.DARK &&
+            AppTheme.currentPalette() != AppTheme.LIGHT
+        Settings.theme = themeBefore
+        changeSetting("Theme")
+        val themeRestored = AppTheme.currentMode() == AppTheme.Mode.LIGHT &&
+            AppTheme.currentPalette() == AppTheme.LIGHT
+
         return "before=[$before] applied=[$applied] restored=[$restored] " +
+            "theme=[before=$themeBefore dark=$themeDark restored=$themeRestored] " +
             "(persistido en Preferences: zoom=${Settings.zoom} align=${Settings.alignement})"
+    }
+
+    /** Ejecuta el bloque en el FX Thread y bloquea al llamador (autotests). */
+    private fun <T> fxBlock(block: () -> T): T {
+        val latch = java.util.concurrent.CountDownLatch(1)
+        var result: T? = null
+        javafx.application.Platform.runLater {
+            try {
+                result = block()
+            } catch (t: Throwable) {
+                System.err.println("FXBLOCK-ERR: $t")
+            }
+            latch.countDown()
+        }
+        latch.await()
+        @Suppress("UNCHECKED_CAST")
+        return result as T
+    }
+
+    /**
+     * Autotest del tema: cambio en caliente Claro→Oscuro (la misma ruta del
+     * SettingsForm) y apertura por código de los popups de los combos
+     * (SchemaElement y Zoom), que es donde el CSS de Modena fallaba al
+     * alternar; luego restaura Claro. Devuelve el resumen del ciclo.
+     */
+    internal fun selftestTheme(): String {
+        val report = StringBuilder()
+
+        fxBlock {
+            Settings.theme = "Oscuro"
+            changeSetting("Theme")
+        }
+        Thread.sleep(500)
+        report.append("dark=").append(AppTheme.currentMode() == AppTheme.Mode.DARK)
+
+        for (combo in listOf(toolStripComboBoxSchemaElement, toolStripComboBoxZoom)) {
+            fxBlock { if (combo.items.isNotEmpty()) combo.show() }
+            Thread.sleep(800)
+            fxBlock { combo.hide() }
+            Thread.sleep(250)
+        }
+
+        fxBlock {
+            Settings.theme = "Claro"
+            changeSetting("Theme")
+        }
+        Thread.sleep(400)
+        report.append(" restored=").append(AppTheme.currentMode() == AppTheme.Mode.LIGHT)
+        return report.toString()
     }
 
     /**

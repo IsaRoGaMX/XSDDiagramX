@@ -82,6 +82,7 @@ class SchemaDownloadDialog(
         }
 
         stage.scene = Scene(content, 620.0, 340.0)
+        xsddiagramx.AppTheme.applyTo(stage.scene)
         // El usuario NO puede cerrarlo con la X: sólo con "Cancelar".
         stage.setOnCloseRequest { event -> event.consume() }
     }

@@ -61,7 +61,11 @@ tasks.withType<JavaExec>().configureEach {
             .files
         jvmArgs(
             "--module-path", requiredJars.joinToString(File.pathSeparator) { it.absolutePath },
-            "--add-modules", "javafx.controls"
+            "--add-modules", "javafx.controls",
+            // Tema oscuro: los POPUPS (combos/menús) son Scenes aparte que no
+            // heredan los stylesheets de la ventana; el tema se instala como
+            // "user agent stylesheet" vía StyleManager (JavaFX interno).
+            "--add-exports", "javafx.graphics/com.sun.javafx.css=ALL-UNNAMED"
         )
     }
 }
@@ -72,6 +76,11 @@ kotlin {
 
 application {
     mainClass.set("xsddiagramx.app.XsdDiagramAppKt")
+    // Tema oscuro: estos flags van también en las corridas directas del IDE
+    // (run de Gradle los agrega en JavaExec; ver tasks.withType<JavaExec>).
+    applicationDefaultJvmArgs = listOf(
+        "--add-exports", "javafx.graphics/com.sun.javafx.css=ALL-UNNAMED"
+    )
 }
 
 tasks.withType<Test> {
