@@ -12,6 +12,11 @@ import javafx.scene.Scene
 import javafx.scene.paint.Color
 import xsddiagramx.app.Settings
 
+/**
+ * Tema de la aplicación (Claro/Oscuro): paleta de colores del diagrama, applyTo
+ * de las Scenes, relleno de fondo y el arrancador del stylesheet user agent
+ * para las popups (los modos los decide el setting `theme` persistido).
+ */
 object AppTheme {
 
     /** ≈ la lista "Tema" del SettingsForm. */

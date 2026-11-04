@@ -2,7 +2,7 @@
 //    restrictionType.kt: xs:restriction dentro de xs:complexContent o xs:simpleContent
 //    (equivale a XMLSchema.restrictionType de XMLSchema.cs en el original C#).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** xs:complexContent > xs:restriction (equivale a XMLSchema.restrictionType). */

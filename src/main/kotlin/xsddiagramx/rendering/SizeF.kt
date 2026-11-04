@@ -3,7 +3,8 @@
 //    Origen C#: sustituye a System.Drawing.SizeF, resultado de Graphics.MeasureString
 //    en DiagramItem.cs (medida de texto del layout).
 //
-//    Licencias del original: LGPL / MS-PL. Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
+//    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
 package xsddiagramx.rendering
 
 /**

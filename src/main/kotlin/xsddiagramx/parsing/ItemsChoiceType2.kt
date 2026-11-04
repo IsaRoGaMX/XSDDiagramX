@@ -2,7 +2,7 @@
 //    ItemsChoiceType2.kt: nombres locales posibles dentro de xs:group/compositores
 //    (equivale al enum XMLSchema.ItemsChoiceType2 de XMLSchema.cs).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** Nombres locales posibles dentro de xs:group / compositores (equivale a ItemsChoiceType2). */

@@ -3,7 +3,7 @@
 //    dentro de xs:extension / xs:restriction / xs:attributeGroup
 //    (equivale a XMLSchema.attributeGroup).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** Caso `attributeGroup` directo; envuelve el [attributeGroup] (ref o declaración). */

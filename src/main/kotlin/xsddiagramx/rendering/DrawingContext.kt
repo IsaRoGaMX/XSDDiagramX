@@ -7,7 +7,8 @@
 //    (JavaFX FontLoader y Text.layoutBounds, métricas del SVG...), de modo que el
 //    dominio no dependa ni de GDI ni de JavaFX.
 //
-//    Licencias del original: LGPL / MS-PL. Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
+//    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
 package xsddiagramx.rendering
 
 /**

@@ -4,7 +4,8 @@
 //    Origen C#: sustituye a Graphics.MeasureString como fuente de mediciones
 //    (antes de la caché, el port re-layoutaba un nodo TEMP por cada texto).
 //
-//    Licencias del original: LGPL / MS-PL. Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
+//    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
 package xsddiagramx.rendering.javafx
 
 import javafx.scene.text.Text

@@ -2,7 +2,8 @@
 //    DiagramItemGroupType.kt: enum del tipo de compositor/grupo que representa un nodo.
 //    Origen C#: XSDDiagrams\Rendering\DiagramItemGroupType.cs.
 //
-//    Licencias del original: LGPL / MS-PL. Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
+//    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
 package xsddiagramx.rendering
 
 /**

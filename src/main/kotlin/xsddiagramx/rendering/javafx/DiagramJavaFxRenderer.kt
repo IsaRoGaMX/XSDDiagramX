@@ -1,7 +1,7 @@
 //    XSD Diagram - Kotlin/JavaFX port
 //    Port de XSDDiagrams\Rendering\DiagramGdiRenderer.cs sobre JavaFX Canvas.
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 //    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización)
 //
 //    Equivalencias System.Drawing -> JavaFX:
@@ -31,6 +31,12 @@ import xsddiagramx.AppTheme
 import kotlin.math.max
 import kotlin.math.roundToInt
 
+/**
+ * Renderer JavaFX (≈ DiagramGdiRenderer.cs): dibuja diagrama y nodos en un
+ * GraphicsContext... como pinta en canvas, sirve para pantalla, impresión y
+ * exportación PNG/JPG. La paleta se pasa explícita: la pantalla usa el tema
+ * activo y los documentos (exportación) SIEMPRE la clara ("papel" blanco).
+ */
 class DiagramJavaFxRenderer(
     private val gc: GraphicsContext,
     /** Paleta del tema; por defecto la del tema activo. Los documentos
@@ -54,8 +60,7 @@ class DiagramJavaFxRenderer(
     // ------------------------------------------------------------------
 
     /** Equivale a Render(Diagram, Rectangle?). */
-    fun render(diagram: Diagram, clipRectangle: KRectangle? = null) {
-        val scaledClip = clipRectangle?.let { clipBox ->
+    fun render(diagram: Diagram, clipRectangle: KRectangle? = null) {        val scaledClip = clipRectangle?.let { clipBox ->
             KRectangle(
                 (clipBox.x / diagram.scale).roundToInt(),
                 (clipBox.y / diagram.scale).roundToInt(),
@@ -75,6 +80,7 @@ class DiagramJavaFxRenderer(
     // Render de un nodo (port 1:1 de DiagramGdiRenderer.Render)
     // ------------------------------------------------------------------
 
+    /** Render recursivo de un nodo del diagrama (bounding box + culling por clip). */
     fun render(drawingItem: DiagramItem, clipRectangle: KRectangle? = null) {
         if (drawingItem.diagram.showBoundingBox) {
             gc.fill = boundingBoxColor(drawingItem.depth)
@@ -283,6 +289,7 @@ class DiagramJavaFxRenderer(
     // Formas principales (element / type / group)
     // ------------------------------------------------------------------
 
+    /** Pluma según ocurrencia: línea discontinua si minOccurs = 0 (nillable). */
     private fun applyOccurrencePen(item: DiagramItem) {
         gc.lineWidth = 1.0
         if (item.minOccurrence == 0) setLineDashPattern(item)
@@ -459,6 +466,7 @@ class DiagramJavaFxRenderer(
         )
         pointSize = item.scaleSize(pointSize)
 
+        /** Linea escalada por el zoom del elemento (helper local del render). */
         fun line(x1: Int, y1: Int, x2: Int, y2: Int) {
             val a = item.scalePoint(KPoint(x1, y1))
             val b = item.scalePoint(KPoint(x2, y2))
@@ -509,18 +517,23 @@ class DiagramJavaFxRenderer(
     private fun resolveBackground(item: DiagramItem): Color =
         if (item.isSelected) selectedBackground else backgroundColor
 
+    /** Tinta del nodo: gris si está deshabilitado (substitución/abstract, etc.). */
     private fun foregroundColor(item: DiagramItem): Color = if (item.isDisabled) gray else foreground
 
+    /** Línea de 1px (equivalente a DrawLine del Graphics con la pluma activa). */
     private fun drawLine(x1: Int, y1: Int, x2: Int, y2: Int) {
         gc.strokeLine(x1.toDouble(), y1.toDouble(), x2.toDouble(), y2.toDouble())
     }
 
+    /** FillRectangle sobre el rectángulo. */
     private fun fillRectBox(box: KRectangle) =
         gc.fillRect(box.x.toDouble(), box.y.toDouble(), box.width.toDouble(), box.height.toDouble())
 
+    /** DrawRectangle sobre el rectángulo. */
     private fun strokeRectBox(box: KRectangle) =
         gc.strokeRect(box.x.toDouble(), box.y.toDouble(), box.width.toDouble(), box.height.toDouble())
 
+    /** ≈ isRectEmpty (Rect.IsEmpty del System.Drawing). */
     private fun isRectEmpty(box: KRectangle): Boolean = box.width == 0 && box.height == 0
 
     /** fillPolygon(x[], y[], n) del Canvas: desdobla el array de pares. */
@@ -535,6 +548,7 @@ class DiagramJavaFxRenderer(
         gc.fillPolygon(xs, ys, n)
     }
 
+    /** drawPolygon(x[], y[], n) del Canvas: desdobla el array de pares. */
     private fun strokePolygon(points: DoubleArray) {
         val n = points.size / 2
         val xs = DoubleArray(n)

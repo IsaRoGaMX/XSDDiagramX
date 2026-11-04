@@ -4,7 +4,8 @@
 //    Origen C#: implementaría ≈ System.Drawing.Graphics.MeasureString, que el C#
 //    pasaba como `Graphics g` a Layout / GenerateMeasure.
 //
-//    Licencias del original: LGPL / MS-PL. Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
+//    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
 package xsddiagramx.rendering.javafx
 
 import xsddiagramx.rendering.DrawingContext

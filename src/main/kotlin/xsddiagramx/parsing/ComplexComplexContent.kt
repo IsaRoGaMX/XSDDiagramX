@@ -2,7 +2,7 @@
 //    ComplexComplexContent.kt: subclase de [ComplexItem] para xs:complexContent dentro
 //    de xs:complexType (equivale a XMLSchema.complexContent en XMLSchema.cs).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** Caso `complexContent` dentro de un xs:complexType; envuelve el [complexContent] hijo. */

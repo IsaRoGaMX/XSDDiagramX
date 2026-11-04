@@ -1,7 +1,7 @@
 //    XSD Diagram - Kotlin/JavaFX port
 //    Port de XSDDiagrams\DiagramHelpers.cs
 //
-//    Licencias del original: LGPL / MS-PL (véase LICENSE-LGPL.txt / LICENSE-MS-PL.txt)
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 //
 //    Helpers de dominio: resolución de atributos (con herencia por extensión y
 //    restricción) y extracción de documentación de las annotations.

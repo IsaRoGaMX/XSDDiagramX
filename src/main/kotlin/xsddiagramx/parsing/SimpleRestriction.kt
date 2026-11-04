@@ -2,7 +2,7 @@
 //    SimpleRestriction.kt: xs:restriction de un xs:simpleType (equivale a
 //    XMLSchema.restriction + facet de XMLSchema.cs; sólo se conservan base y facetas).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** xs:restriction simple. Sólo se necesita el base + lista de facetas (sin procesar). */

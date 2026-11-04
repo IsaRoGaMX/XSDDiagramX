@@ -2,7 +2,7 @@
 //    XSDObject.kt: envoltorio de un componente global del esquema indexado
 //    (equivale a XSDObject de Schema.cs en el original C#).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /**

@@ -2,7 +2,7 @@
 //    facet.kt: xs:facet de los simpleType (enumeration, pattern, length...)
 //    (equivale a XMLSchema.facet en XMLSchema.cs).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** xs:facet (enumeration, pattern, length...). El original usaba XMLSchema.facet. */

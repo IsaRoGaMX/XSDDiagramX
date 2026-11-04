@@ -5,21 +5,20 @@
 //    parsea el documento con el DOM del JDK (javax.xml.parsers, sin librerías
 //    externas) y se mapea manualmente sobre el modelo de XmlSchema.kt.
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 import java.io.ByteArrayInputStream
 import java.io.File
-import java.io.IOException
 import java.io.InputStream
 import javax.xml.parsers.DocumentBuilderFactory
 import org.w3c.dom.Element
 
-/** Errores de parseo (equivale a los errores de XmlSerializer/InvalidOperationException). */
-class XmlSchemaReadException(message: String, cause: Throwable? = null) : IOException(message, cause)
-
 /**
- * Lee un .xsd y devuelve el modelo [schema].
+ * Parser del DOM del JDK (javax.xml.parsers, sin librerías externas) que lee un
+ * fichero .xsd y rellena el modelo de datos espejo de XML Schema (≈ la
+ * deserialización que en el C# hacía XmlSerializer con las clases de xsd.exe).
+ * Solo soporta el subconjunto de elementos que el diagrama usa realmente.
  */
 class XmlSchemaReader {
 
@@ -37,6 +36,7 @@ class XmlSchemaReader {
         }
     }
 
+    /** Parsea el documento XML (stream) y devuelve el modelo; valida la raíz. */
     fun read(inputStream: InputStream): schema {
         val document = try {
             factory.newDocumentBuilder().parse(inputStream)
@@ -53,8 +53,10 @@ class XmlSchemaReader {
         return parseSchema(root)
     }
 
+    /** Lee un fichero .xsd del disco. */
     fun read(file: File): schema = file.inputStream().use { read(it) }
 
+    /** Lee un .xsd a partir de su texto completo. */
     fun read(text: String): schema =
         read(ByteArrayInputStream(text.toByteArray(Charsets.UTF_8)))
 
@@ -79,6 +81,7 @@ class XmlSchemaReader {
         return if (value.isEmpty()) null else value
     }
 
+    /** Lee un valor booleano xsd (true/1) con su valor por defecto. */
     private fun attrBool(el: Element, name: String, default: Boolean = false): Boolean {
         val value = attr(el, name) ?: return default
         return value == "true" || value == "1"
@@ -102,6 +105,7 @@ class XmlSchemaReader {
         }
     }
 
+    /** par minOccurs/maxOccurs del elemento con sus valores por defecto. */
     private fun minMaxOccurs(el: Element): Pair<String, String> =
         Pair(attr(el, "minOccurs") ?: "1", attr(el, "maxOccurs") ?: "1")
 
@@ -109,6 +113,7 @@ class XmlSchemaReader {
     // xs:schema
     // ------------------------------------------------------------------
 
+    /** Parsea xs:schema: atributos raíz y reparto document order a los handlers. */
     private fun parseSchema(el: Element): schema {
         val s = schema()
         s.targetNamespace = attr(el, "targetNamespace")
@@ -139,6 +144,7 @@ class XmlSchemaReader {
         return s
     }
 
+    /** Parsea xs:annotation > xs:documentation (xml:lang vía getAttributeNS). */
     private fun parseAnnotation(el: Element): annotation {
         val a = annotation()
         for (child in children(el)) when (child.localName) {
@@ -160,6 +166,7 @@ class XmlSchemaReader {
     // Tipos
     // ------------------------------------------------------------------
 
+    /** Parsea xs:complexType: content model (items/itemsElementName en document order). */
     private fun parseComplexType(el: Element): complexType {
         val c = complexType()
         c.name = attr(el, "name")
@@ -196,6 +203,7 @@ class XmlSchemaReader {
         return c
     }
 
+    /** Parsea xs:simpleType (restriction + facetas, list, union). */
     private fun parseSimpleType(el: Element): simpleType {
         val st = simpleType()
         st.name = attr(el, "name")
@@ -231,6 +239,7 @@ class XmlSchemaReader {
         return st
     }
 
+    /** Parsea xs:group / compositores en un [group] común (name/ref/occurs/partículas). */
     private fun parseGroup(el: Element): group {
         val g = group()
         g.name = attr(el, "name")
@@ -262,6 +271,7 @@ class XmlSchemaReader {
     // Contenido (complexContent / simpleContent)
     // ------------------------------------------------------------------
 
+    /** Parsea xs:complexContent (extension/restriction). */
     private fun parseComplexContent(el: Element): complexContent {
         val cc = complexContent()
         for (child in children(el)) when (child.localName) {
@@ -272,6 +282,7 @@ class XmlSchemaReader {
         return cc
     }
 
+    /** Parsea xs:simpleContent (extension/restriction simple). */
     private fun parseSimpleContent(el: Element): simpleContent {
         val sc = simpleContent()
         for (child in children(el)) when (child.localName) {
@@ -287,6 +298,7 @@ class XmlSchemaReader {
         return sc
     }
 
+    /** Parsea xs:extension (compositores + atributos en document order). */
     private fun parseExtension(el: Element): extensionType {
         val ext = extensionType(qn(el, attr(el, "base")))
 
@@ -303,6 +315,7 @@ class XmlSchemaReader {
         return ext
     }
 
+    /** Parsea xs:restriction complejo (partículas + atributos). */
     private fun parseComplexRestriction(el: Element): restrictionType {
         val restriction = restrictionType(qn(el, attr(el, "base")))
 
@@ -321,12 +334,14 @@ class XmlSchemaReader {
 
     // Nota: los compositores anidados (all/choice/sequence) y las referencias
     // (xs:group) comparten la clase [group], igual que en el C# (explicitGroup : group).
+    /** Parsea un compositor (all/choice/sequence): delega en parseGroup. */
     private fun parseGroupCompositor(el: Element): group = parseGroup(el)
 
     // ------------------------------------------------------------------
     // Partículas
     // ------------------------------------------------------------------
 
+    /** Parsea xs:element (top-level y local: name/type/ref/occurs/inline types). */
     private fun parseElement(el: Element): element {
         val e = element()
         e.name = attr(el, "name")
@@ -348,6 +363,7 @@ class XmlSchemaReader {
         return e
     }
 
+    /** Parsea xs:any (wildcard de partícula con occurs). */
     private fun parseAny(el: Element): any {
         val a = any()
         a.namespace = attr(el, "namespace")
@@ -358,6 +374,7 @@ class XmlSchemaReader {
         return a
     }
 
+    /** Parsea xs:anyAttribute (wildcard de atributos). */
     private fun parseWildcardAttribute(el: Element) = wildcard().apply {
         namespace = attr(el, "namespace")
     }
@@ -366,6 +383,7 @@ class XmlSchemaReader {
     // Atributos
     // ------------------------------------------------------------------
 
+    /** Parsea xs:attribute (name/type/ref/default/fixed/use + inline simpleType). */
     private fun parseAttribute(el: Element): attribute {
         val a = attribute()
         a.name = attr(el, "name")
@@ -383,6 +401,7 @@ class XmlSchemaReader {
         return a
     }
 
+    /** Parsea xs:attributeGroup (name/ref + atributos en document order). */
     private fun parseAttributeGroup(el: Element): attributeGroup {
         val ag = attributeGroup()
         ag.name = attr(el, "name")

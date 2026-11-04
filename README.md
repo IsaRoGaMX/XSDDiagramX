@@ -127,18 +127,17 @@ JavaFX de Maven Central; no se usa ningún plugin de terceros.
 PROYECTO ORIGINAL (C#)                      ESTE PORT (Kotlin)
 xsddiagram-master\                          
 src\main\kotlin\xsddiagram\
-│   ├── Parsing\XmlSchema.cs  <- xsd.exe    │   ├── parsing\XmlSchema.kt       (modelo de datos)
-│   │       (XmlSerializer)                 │   ├── parsing\XmlSchemaReader.kt (parser DOM del JDK)
-│   ├── Parsing\Schema.cs                   │   ├── parsing\Schema.kt          (SchemaLoader + XSDObject...)
+│   ├── Parsing\XmlSchema.cs  <- xsd.exe    │   ├── parsing\XmlSchemaReader.kt (parser DOM del JDK)
+│   │       (XmlSerializer)                 │   ├── parsing\*.kt               (modelo: 1 clase/archivo, fase 5)
+│   ├── Parsing\Schema.cs                   │   ├── parsing\SchemaLoader.kt    (SchemaLoader + XSDObject...)
 │   ├── DiagramHelpers.cs                   │   └── DiagramHelpers.kt
 │   └── Rendering\                          │   └── rendering\
-│       ├── DiagramItemType/GroupType/      │       ├── DiagramEnums.kt
-│       │   Alignement/HitTestRegion .cs    │       │
-│       ├── (System.Drawing)                │       ├── Geometry.kt (Point/Size/Rectangle + operadores)
-│       │                                   │       ├── DrawingContext.kt (medición desacoplada)
+│       ├── DiagramItemType/GroupType/      │       ├── enums + Geometry: KPoint/KSize/SizeF/
+│       │   Alignement/HitTestRegion .cs    │       │   KRectangle, 1 tipo/archivo (fase 5)
+│       ├── (System.Drawing)                │       ├── DrawingContext.kt + FontDescription (medición desacoplada)
 │       ├── DiagramItem.cs                  │       ├── DiagramItem.kt
-│       ├── Diagram.cs                      │       └── Diagram.kt
-│       ├── DiagramRenderer/Gdi/Svg/Txt.cs   │       ├── DiagramRenderer.kt (base, fase 3)
+│       ├── Diagram.cs                      │       ├── Diagram.kt
+│       ├── DiagramRenderer/Gdi/Svg/Txt.cs  │       ├── DiagramRenderer.kt (base, fase 3)
 │       │   + DiagramExporter.cs            │       ├── DiagramSvgRenderer.kt / DiagramTxtRenderer.kt (fase 3)
 │       │                                   │       ├── DiagramExporter.kt (fase 3)
 │       │                                   │       └── javafx\DiagramJavaFxRenderer.kt (≈ GDI, fase 2)
@@ -163,9 +162,9 @@ Portado con tests de comportamiento equivalentes a los casos de `Tests\issues\`:
 
 | Original (C#) | Port (Kotlin) | Notas del port |
 |---|---|---|
-| `XMLSchema.*` (xsd.exe, 2443 líneas) | `parsing/XmlSchema.kt` | Sólo el subconjunto parseado/usado: sin facetas de simpleType (sólo base+lista), sin `key/keyref/notation`. |
+| `XMLSchema.*` (xsd.exe, 2443 líneas) | `parsing/*.kt` (1 clase/archivo, fase 5) | Sólo el subconjunto parseado/usado: sin facetas de simpleType (sólo base+lista), sin `key/keyref/notation`. |
 | `XmlSerializer` (deserialización) | `parsing/XmlSchemaReader.kt` | Parser DOM del JDK: resuelve QNames via `lookupNamespaceURI` y `xml:lang` via `getAttributeNS`. **No hay dependencias de terceros** |
-| `Schema.cs` + XSDObject/XSDAttribute/XSDAttributeGroup | `parsing/Schema.kt` | `SchemaLoader`: import recursivo include/import, descarga HTTP con credenciales 401/403, strip de `<!DOCTYPE...>`, etc. |
+| `Schema.cs` + XSDObject/XSDAttribute/XSDAttributeGroup | `parsing/SchemaLoader.kt` + `XSD*.kt` (1 clase/archivo) | `SchemaLoader`: import recursivo include/import, descarga HTTP con credenciales 401/403, strip de ``<!DOCTYPE...>``, etc. |
 | `Diagram.cs` | `rendering/Diagram.kt` | Expansión perezosa, layout, hit-test, búsqueda, `RequestAnyElement` (callback), herencia (`extension`/`restriction`) y grupos de substitución. |
 | `DiagramItem.cs` | `rendering/DiagramItem.kt` | Measure/Location recursivos y `HitTest` (con `HitTestResult` en lugar de `out`). |
 | `System.Drawing.Point/Size/Rectangle/Font/Graphics` | `rendering/Geometry.kt` + `rendering/DrawingContext.kt` | KPoint/KSize/KRectangle/SizeF + `DrawingContext` (interface de medición) y `FontD...` |
@@ -174,7 +173,7 @@ Portado con tests de comportamiento equivalentes a los casos de `Tests\issues\`:
 | `DiagramControl.cs` | `app/DiagramControl.kt` | `Canvas` con `paint(virtualPoint)`, `clientSize`, `clientRectangle`. |
 | `DiagramControlContainer.cs` | `app/DiagramControlContainer.kt` | Scrollbars sobre tamaño virtual (`max = virtualSize - clientSize`, ≈ `Maximum - LargeChange` de WinForms), pan arrastrando, etc. |
 | `MainForm.cs` + `MainForm.Designer.cs` | `app/MainForm.kt` | Menús File/Window/Help (Recent Files en memoria, fase 4 lo persiste), toolbar con texto en vez de iconos (los PNG van en Resources...). |
-| `XMLSchema.facet` (xsd.exe) | `parsing/XmlSchema.kt` (`class facet`) | Las facetas de `xs:restriction` ya se portan reales (`kind` + `value`): alimenta el tab "Element" y la columna de enumeraciones. |
+| `XMLSchema.facet` (xsd.exe) | `parsing/facet.kt` | Las facetas de `xs:restriction` ya se portan reales (`kind` + `value`): alimenta el tab "Element" y la columna de enumeraciones. |
 | `DiagramRenderer.cs` | `rendering/DiagramRenderer.kt` (fase 3) | Base abstracta Begin/Render/End de los renderers de salida (TXT/SVG). |
 | `DiagramTxtRenderer.cs` | `rendering/DiagramTxtRenderer.kt` (fase 3) | TXT (tabulado) y CSV (`isCSV`): cabecera con los `TextOutputFields` y filas PATH/NAME/TYPE/NAMESPACE/COMMENT/SEQ/LASTCHILD/... |
 | `DiagramSvgRenderer.cs` | `rendering/DiagramSvgRenderer.kt` (fase 3) | SVG texto: líneas de herencia/referencia/grupos, clipping docs, etc. |
@@ -203,22 +202,25 @@ DomainSmokeTest  → carga, indexación, includes, expansión (base + extensión
 OptionsTest      → parseo de la línea de comandos (fase 4).
 ```
 
-## Licencia recomendada para este repositorio
+## Licencia de este repositorio
 
-Recomendación para este repo, por compatibilidad con el proyecto original:
-
-- **GPL-2.0-or-later**
+- **GPL-2.0-or-later** (GNU General Public License v2 o cualquier versión posterior).
+- El texto completo está en el archivo [`LICENSE`](LICENSE); la parte superior del
+  archivo incluye la aplicación de licencia, los créditos, el enlace al proyecto
+  original y la mención del permiso del autor.
 
 Esto mantiene el origen del proyecto, reconoce la obra derivada y reduce el riesgo de
-incompatibilidades con el código original (GPL/LGPL/MS-PL). Si se decide una licencia distinta,
-se debe revisar la compatibilidad con el proyecto original y, en caso necesario, pedir permiso
-explícito a los autores.
+incompatibilidades con el código original (GPL/LGPL/MS-PL).
 
 ## Atribución al proyecto original
 
 - Repositorio original: https://github.com/dgis/xsddiagram
+- Página del autor original: http://regis.cosnier.free.fr/?page=XSDDiagram
 - Autor original: Regis Cosnier
 - Contribuciones originales: Mathieu Malaterre, Paul Selormey, Edu Serna, TCH68k y demás autores citados en el `ReadMe.txt` del proyecto original.
+- **Permiso del autor original**: Regis Cosnier otorgó autorización explícita para
+  desarrollar este port y publicarlo como repositorio público; los detalles están
+  en la cabecera del archivo `LICENSE`.
 - Este repositorio es una adaptación/port a Kotlin/JavaFX del proyecto original y no reemplaza ni sustituye su autoría original.
 
 ## Créditos extra
@@ -226,4 +228,8 @@ explícito a los autores.
 Este port se basa en el trabajo original de **Regis Cosnier** y otros contribuidores del
 proyecto XSD Diagram. Cualquier modificación adicional realizada en este repositorio debe
 mantener esta atribución y respetar las condiciones de la licencia original.
+
+Este port fue desarrollado **con ayuda de herramientas de IA**: el agente de código
+**OpenCode** (https://github.com/opencode-ai/opencode) asistido por el modelo
+**GLM-5.3-Flash** de Z.ai, bajo la dirección y revisión de IsaRoGaMX.
 

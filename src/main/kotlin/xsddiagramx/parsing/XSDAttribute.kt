@@ -2,7 +2,7 @@
 //    XSDAttribute.kt: envoltorio de un atributo global del esquema indexado
 //    (equivale a XSDAttribute de Schema.cs en el original C#).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** Envoltorio de un atributo global (equivale a XSDAttribute). */

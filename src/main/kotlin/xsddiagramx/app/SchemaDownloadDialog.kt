@@ -96,6 +96,7 @@ class SchemaDownloadDialog(
         for (line in events) logListView.items.add(line)
     }
 
+    /** Encola un mensaje del hilo de descarga o lo muestra ya si el diálogo está visible. */
     private fun queue(line: String) {
         // Llega del hilo de carga: encola; si el diálogo ya está en pantalla,
         // lo refleja en el hilo de la GUI.
@@ -107,6 +108,7 @@ class SchemaDownloadDialog(
         }
     }
 
+    /** ≈ DownloadProgressChanged: muestra el recurso que se está bajando. */
     fun onDownloadStart(url: String) {
         Platform.runLater {
             currentLabel.text = "Descargando: $url"
@@ -114,6 +116,7 @@ class SchemaDownloadDialog(
         }
     }
 
+    /** Marca una descarga terminada (con o sin error) y repinta el progreso. */
     fun onDownloadEnd(failed: Boolean) {
         Platform.runLater {
             downloadsDone++
@@ -123,6 +126,7 @@ class SchemaDownloadDialog(
         }
     }
 
+    /** ≈ logEntry: agrega una línea al registro visible de progreso. */
     fun log(line: String) = queue(line)
 
     /** Cierra el diálogo (se llama solo en el FX Thread). */

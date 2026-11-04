@@ -3,7 +3,7 @@
 //    directo en el C# (usaba XSDDiagram.ico en Form.Icon; aquí se extrae el PNG
 //    de mayor tamaño de icon.ico o se genera uno con Canvas si falta).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx
 
 import javafx.scene.canvas.Canvas

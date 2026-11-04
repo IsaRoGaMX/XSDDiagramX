@@ -1,7 +1,7 @@
 //    XSD Diagram - Kotlin/JavaFX port
 //    Port de Options.cs (parseo de la línea de comandos del C#).
 //
-//    Licencias del original: LGPL / MS-PL (véase LICENSE-LGPL.txt / LICENSE-MS-PL.txt)
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 //
 //    Diferencias:
 //      - IsRunningOnMono es siempre false (no hay Mono en Java; el C# lo

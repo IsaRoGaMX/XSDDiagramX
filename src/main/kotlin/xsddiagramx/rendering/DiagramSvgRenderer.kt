@@ -1,7 +1,7 @@
 //    XSD Diagram - Kotlin/JavaFX port
 //    Port de XSDDiagrams\Rendering\DiagramSvgRenderer.cs
 //
-//    Licencias del original: LGPL / MS-PL (véase LICENSE-LGPL.txt / LICENSE-MS-PL.txt)
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 //    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización)
 //
 //    Diferencias: la medición de texto para el "WrapText" del C# usaba el
@@ -514,19 +514,23 @@ class DiagramSvgRenderer(
     // Emisión SVG
     // ------------------------------------------------------------------
 
+    /** Emite una <line> SVG entre dos puntos. ≈ DrawLine del Graphics. */
     private fun svgLine(pen: String, pt1: KPoint, pt2: KPoint) =
         svgLine(pen, pt1.x, pt1.y, pt2.x, pt2.y)
 
+    /** Emite una <line> SVG con coordenadas sueltas. ≈ DrawLine del Graphics. */
     private fun svgLine(pen: String, x1: Int, y1: Int, x2: Int, y2: Int) {
         writer.write("<line x1=\"$x1\" y1=\"$y1\" x2=\"$x2\" y2=\"$y2\" style=\"$pen\"/>\r\n")
     }
 
+    /** Emite un <rect> SVG (sólo borde, sin relleno). ≈ DrawRectangle. */
     private fun svgRectangle(pen: String, rect: KRectangle) {
         writer.write(
             "<rect x=\"${rect.x}\" y=\"${rect.y}\" width=\"${rect.width}\" height=\"${rect.height}\" style=\"$pen\"/>\r\n"
         )
     }
 
+    /** Emite una <ellipse> SVG inscrita en el rectángulo (≈ DrawEllipse). */
     private fun svgEllipse(brush: String, rect: KRectangle) {
         writer.write(
             "<ellipse cx=\"${rect.x + rect.width / 2}\" cy=\"${rect.y + rect.height / 2}\" " +
@@ -534,22 +538,29 @@ class DiagramSvgRenderer(
         )
     }
 
+    /** Emite un <path> SVG de línea continua (≈ DrawPath). */
     private fun svgPath(style: String, drawCommand: String) {
         writer.write("<path d=\"$drawCommand\" style=\"$style\"/>\r\n")
     }
 
+    /** Emite un <text> SVG en un punto (≈ DrawString). */
     private fun svgText(text: String, style: String, point: KPoint) {
         writer.write(
             "<text x=\"${point.x}\" y=\"${point.y}\" style=\"$style\">${xmlEscape(text)}</text>\r\n"
         )
     }
 
+    /** Emite un <text> SVG centrado en el rectángulo (≈ DrawString centrado). */
     private fun svgText(text: String, style: String, rect: KRectangle) {
         writer.write(
             "<text x=\"${rect.x + rect.width / 2.0}\" y=\"${rect.y + rect.height / 2.0}\" style=\"$style\">${xmlEscape(text)}</text>\r\n"
         )
     }
 
+    /**
+     * Emite un bloque de documentación (multi-línea) con clip-path para acotar
+     * el alto visible (≈ el DocumentBox del diagrama GDI/SVG).
+     */
     private fun svgText(text: List<String>, style: String, point: KPoint, fontSize: Float, size: KSize) {
         val x = point.x; val y = point.y
         writer.write(
@@ -567,6 +578,7 @@ class DiagramSvgRenderer(
         xsdDocCounter++
     }
 
+    /** Convierte los vértices de un polígono al comando d="M... L... Z" de SVG. */
     private fun svgPolygonToDrawCommand(pathPoint: Array<KPoint>): String {
         val result = StringBuilder()
         for (i in pathPoint.indices) {

@@ -10,8 +10,8 @@ class OptionsTest {
 
     @Test
     fun parseCommandLine() {
-        // Ojo: Options es un singleton (el C# era de estático único). Este test
-        // corre en una JVM propia de la suite (ningún otro test llama a init).
+// Ojo: Options es un singleton (el C# era de estático único). Este test
+// corre en una JVM propia de la suite (ningún otro test llama a init).
         Options.init(
             listOf(
                 "-e", "3", "-d", "-z", "150", "-f", "PATH, NAME", "-a",

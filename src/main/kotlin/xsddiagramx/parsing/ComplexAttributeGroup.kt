@@ -2,7 +2,7 @@
 //    ComplexAttributeGroup.kt: subclase de [ComplexItem] para xs:attributeGroup dentro
 //    de xs:complexType (equivale a XMLSchema.attributeGroup en XMLSchema.cs).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** Caso `attributeGroup` dentro de un xs:complexType; envuelve el [attributeGroup] (ref o declaración). */

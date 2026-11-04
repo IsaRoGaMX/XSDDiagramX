@@ -2,7 +2,7 @@
 //    any.kt: xs:any del modelo del esquema (equivale a XMLSchema.any, que en C#
 //    derivaba de wildcard, en XMLSchema.cs).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** xs:any (equivale a XMLSchema.any, que deriva de wildcard). */

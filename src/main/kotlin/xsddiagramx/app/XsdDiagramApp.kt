@@ -1,7 +1,7 @@
 //    XSD Diagram - Kotlin/JavaFX port
 //    Port de Program.cs (Application.Run(new MainForm())) para la rama GUI.
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.app
 
 import javafx.application.Application

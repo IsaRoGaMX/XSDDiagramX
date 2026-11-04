@@ -3,7 +3,7 @@
 //    metamodelo de XML Schema (equivale a XMLSchema.schema, generado por xsd.exe
 //    en el original, archivo XMLSchema.cs).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 //
 //    Nota de contexto del port (compartía cabecera con el resto del modelo):
 //    las clases del paquete se escriben a mano y se rellenan mediante

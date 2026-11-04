@@ -2,7 +2,7 @@
 //    attribute.kt: xs:attribute del modelo del esquema (equivale a attribute /
 //    attributeRef de XMLSchema.cs, generado por xsd.exe).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** xs:attribute (top-level y local). El `use` original era un enum; aquí es String tal cual. */

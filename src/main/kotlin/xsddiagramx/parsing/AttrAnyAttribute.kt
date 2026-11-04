@@ -3,7 +3,7 @@
 //    de xs:extension / xs:restriction / xs:attributeGroup (equivale a
 //    XMLSchema.wildcard en XMLSchema.cs).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** Caso `anyAttribute` directo; envuelve el [wildcard] hijo. */

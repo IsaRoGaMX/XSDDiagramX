@@ -2,7 +2,7 @@
 //    Credentials.kt: credenciales para URLs protegidas con autenticación básica
 //    HTTP (port del par `out username, password` del C# de Schema.cs).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** Credenciales para URLs protegidas (equivale a los `out username, password` del C#). */

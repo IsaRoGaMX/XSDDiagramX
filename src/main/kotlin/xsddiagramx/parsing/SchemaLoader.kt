@@ -3,7 +3,7 @@
 //    include/import, y su helper de TLS TrustAllCerts (port de la clase Schema de
 //    XSDDiagrams\Parsing\Schema.cs; también conserva el alias `Schema` del C#).
 //
-//    Licencias del original: LGPL / MS-PL (véase LICENSE-LGPL.txt / LICENSE-MS-PL.txt)
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 //    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización)
 package xsddiagramx.parsing
 

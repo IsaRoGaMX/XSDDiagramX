@@ -2,7 +2,7 @@
 //    attributeGroup.kt: xs:attributeGroup del modelo del esquema (equivale a
 //    attributeGroupRef / namedAttributeGroup de XMLSchema.cs, generado por xsd.exe).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** xs:attributeGroup (local y top-level; en C#: attributeGroupRef y namedAttributeGroup). */

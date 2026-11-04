@@ -1,7 +1,7 @@
 //    XSD Diagram - Kotlin/JavaFX port
 //    Port de XSDDiagrams\Rendering\DiagramItem.cs
 //
-//    Licencias del original: LGPL / MS-PL (véase LICENSE-LGPL.txt / LICENSE-MS-PL.txt)
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 //    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización)
 //
 //    Nodo visual del diagrama: estado, geometría (medida + localización
@@ -14,6 +14,12 @@ import xsddiagramx.DiagramHelpers
 import xsddiagramx.parsing.Annotated
 import xsddiagramx.parsing.element
 
+/**
+ * Nodo visual del diagrama (≈ DiagramItem.cs): guarda el estado mostrado de un
+ * elemento del esquema (caja, hijos, ticks de expandido/colapsado, selección)
+ * y hace la geometría recursiva (measure/location) exactamente igual que el
+ * original; el renderizado en sí lo hace el renderer correspondiente.
+ */
 class DiagramItem {
 
     // ------------------------------------------------------------
@@ -209,9 +215,13 @@ class DiagramItem {
     // Escalado (delegado en el diagrama, como en el C#)
     // ------------------------------------------------------------
 
+    /** Integra un escalar: Diagram.ScaleInt (aplica el zoom del diagrama). */
     fun scaleInt(integer: Int): Int = diagram.scaleInt(integer)
+    /** Integra un punto: Diagram.ScalePoint. */
     fun scalePoint(point: KPoint): KPoint = diagram.scalePoint(point)
+    /** Integra un tamaño: Diagram.ScaleSize. */
     fun scaleSize(point: KSize): KSize = diagram.scaleSize(point)
+    /** Integra un rectángulo: Diagram.ScaleRectangle. */
     fun scaleRectangle(rectangle: KRectangle): KRectangle = diagram.scaleRectangle(rectangle)
 
     // ------------------------------------------------------------

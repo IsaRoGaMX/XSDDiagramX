@@ -2,7 +2,7 @@
 //    Port de DiagramControlContainer.cs (UserControl con scrollbars verticales/
 //    horizontales sobre un área "virtual", pan con el ratón y rueda del mouse).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 //    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización)
 //
 //    Diferencias deliberadas respecto a las ScrollBars de WinForms:
@@ -314,6 +314,7 @@ class DiagramControlContainer : BorderPane() {
      */
     private var repaintScheduled = false
 
+    /** Repinta en el próximo frame del FX Thread (coalesce N peticiones). */
     private fun requestRepaint() {
         if (repaintScheduled) return
         repaintScheduled = true
@@ -336,6 +337,7 @@ class DiagramControlContainer : BorderPane() {
 
     private var resizeRepaintScheduled = false
 
+    /** Arma el temporizador de 150 ms al primer evento del resize (debounce). */
     private fun requestRepaintAfterResize() {
         if (!resizeRepaintScheduled) {
             resizeRepaintScheduled = true

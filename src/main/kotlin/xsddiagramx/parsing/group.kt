@@ -2,7 +2,7 @@
 //    group.kt: xs:group y los compositores (xs:all, xs:choice, xs:sequence comparten
 //    clase, como en el C# original con explicitGroup : group de XMLSchema.cs).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** xs:group / compositor (tnxs:all, xs:choice, xs:sequence y xs:group comparten clase). */

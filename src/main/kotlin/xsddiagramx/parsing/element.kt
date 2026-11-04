@@ -2,7 +2,7 @@
 //    element.kt: xs:element del modelo del esquema (equivale a topLevelElement /
 //    localElement / narrowMaxMin de XMLSchema.cs, generado por xsd.exe).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /**

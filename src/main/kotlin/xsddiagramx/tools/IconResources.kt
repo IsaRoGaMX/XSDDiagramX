@@ -2,7 +2,7 @@
 //    IconResources.kt: utilidad para cargar los iconos 16px del MainForm
 //    (los PNG van en Resources.resx del proyecto C#, aquí en /icons).
 //
-//    Licencias del original: LGPL (MainForm) / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.tools
 
 import javafx.scene.Node

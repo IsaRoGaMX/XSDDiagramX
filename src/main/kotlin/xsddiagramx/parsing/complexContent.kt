@@ -2,7 +2,7 @@
 //    complexContent.kt: xs:complexContent del modelo del esquema (equivale a
 //    XMLSchema.complexContent de XMLSchema.cs en el original C#).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** xs:complexContent. */

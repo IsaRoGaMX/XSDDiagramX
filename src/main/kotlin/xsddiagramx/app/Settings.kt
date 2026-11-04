@@ -1,7 +1,7 @@
 //    XSD Diagram - Kotlin/JavaFX port
 //    Port de Settings.cs (ApplicationSettingsBase del C#) + Properties\Settings.Designer.cs
 //
-//    Licencias del original: LGPL / MS-PL (véase LICENSE-LGPL.txt / LICENSE-MS-PL.txt)
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 //
 //    Diferencias: el C# persistía en user.config (machine/user.config por
 //    empresa/producto); aquí se usa java.util.prefs.Preferences del JDK

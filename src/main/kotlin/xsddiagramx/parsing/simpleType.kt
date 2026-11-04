@@ -2,7 +2,7 @@
 //    simpleType.kt: xs:simpleType del modelo del esquema (equivale a los tipos
 //    topLevelSimpleType / localSimpleType de XMLSchema.cs, generado por xsd.exe).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** xs:simpleType (top-level, local dentro de xs:element/xs:attribute y anónimo). */

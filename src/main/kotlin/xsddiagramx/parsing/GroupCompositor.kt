@@ -3,7 +3,7 @@
 //    (xs:sequence/xs:choice/xs:all/xs:group) dentro de otro grupo
 //    (equivale a explicitGroup : group de XMLSchema.cs).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** Caso `group`/`all`/`choice`/`sequence` dentro de un grupo/compositor; envuelve el [group] anidado. */

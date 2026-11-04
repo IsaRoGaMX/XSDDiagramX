@@ -2,7 +2,7 @@
 //    simpleContent.kt: xs:simpleContent del modelo del esquema (equivale a
 //    XMLSchema.simpleContent de XMLSchema.cs en el original C#).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** xs:simpleContent. */

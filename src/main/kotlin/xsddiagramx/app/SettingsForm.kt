@@ -1,7 +1,7 @@
 //    XSD Diagram - Kotlin/JavaFX port
 //    Port de SettingsForm.cs + SettingsForm.Designer.cs
 //
-//    Licencias del original: LGPL / MS-PL (véase LICENSE-LGPL.txt / LICENSE-MS-PL.txt)
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 //
 //    Diferencias: el PropertyGrid del WinForms no existe en JavaFX; a petición
 //    del usuario la ventana es un FORMULARIO (GridPane) con un control por
@@ -39,6 +39,7 @@ class SettingsForm(private val owner: Stage) : Stage() {
 
         // ≈ el editor del PropertyGrid: al cambiar un control, persistir el
         // setting y notificar al MainForm (ChangeSetting).
+        /** Notifica el cambio de un setting al MainForm (≈ propertyGrid1_PropertyValueChanged). */
         fun onSetting(name: String) {
             MainForm.lastForm?.changeSetting(name)
         }

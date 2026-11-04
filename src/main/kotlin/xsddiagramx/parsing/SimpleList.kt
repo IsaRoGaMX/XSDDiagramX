@@ -2,7 +2,7 @@
 //    SimpleList.kt: xs:list de un xs:simpleType (equivale a XMLSchema.list de
 //    XMLSchema.cs en el original C#).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** xs:list. */

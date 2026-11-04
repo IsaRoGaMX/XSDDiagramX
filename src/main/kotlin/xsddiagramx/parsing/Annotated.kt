@@ -2,7 +2,7 @@
 //    Annotated.kt: base de los componentes que pueden llevar xs:annotation
 //    (equivale a XMLSchema.annotated en el original C#).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** Equivale a XMLSchema.annotated: cualquier componente que puede llevar xs:annotation. */

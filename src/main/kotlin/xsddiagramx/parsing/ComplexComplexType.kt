@@ -2,7 +2,7 @@
 //    ComplexComplexType.kt: subclase de [ComplexItem] para un xs:complexType anidado
 //    dentro de otro (equivale a los casos nestedcomplexType de XMLSchema.cs).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** Caso `complexType` (anidado, no top-level) dentro de un xs:complexType; envuelve el [complexType] hijo. */

@@ -2,7 +2,7 @@
 //    WebException.kt: excepción de fallo en la descarga HTTP de dependencias XSD
 //    (port de System.Net.WebException de Schema.cs en el original C#).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 import java.io.IOException

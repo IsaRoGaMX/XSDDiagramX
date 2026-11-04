@@ -1,7 +1,7 @@
 //    XSD Diagram - Kotlin/JavaFX port
 //    Port de MRUManager.cs (lista de ficheros recientes).
 //
-//    Licencias del original: LGPL / MS-PL (véase LICENSE-LGPL.txt / LICENSE-MS-PL.txt)
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 //
 //    Diferencias: el C# usaba el registro de Windows
 //    (HKCU\Software\xsddiagram\MRU, claves "0","1","2"...); aquí se usa

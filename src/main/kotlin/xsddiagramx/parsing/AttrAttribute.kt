@@ -2,7 +2,7 @@
 //    AttrAttribute.kt: subclase de [AttrItem] para xs:attribute directo dentro de
 //    xs:extension / xs:restriction / xs:attributeGroup (equivale a XMLSchema.attribute).
 //
-//    Licencias del original: LGPL / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.parsing
 
 /** Caso `attribute` directo; envuelve el [attribute] hijo. */

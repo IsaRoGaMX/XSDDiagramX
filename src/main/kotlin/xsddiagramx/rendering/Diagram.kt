@@ -4,7 +4,8 @@
 //    posición), hit-test, búsqueda y utilidades de escalado.
 //    Origen C#: port de XSDDiagrams\Rendering\Diagram.cs.
 //
-//    Licencias del original: LGPL / MS-PL. Autores originales: Regis Cosnier (inicial),
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
+//    Autores originales: Regis Cosnier (inicial),
 //    Paul Selormey (refactorización), Edu Serna (funcionalidad de búsqueda).
 package xsddiagramx.rendering
 

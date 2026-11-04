@@ -3,7 +3,7 @@
 //    sobre javafx.scene.canvas.Canvas. La lógica de pintado la ejecuta
 //    MainForm.DiagramControl_Paint vía paint(virtualPoint).
 //
-//    Licencias del original: LGPL (MainForm/DiagramControl) / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.app
 
 import javafx.scene.canvas.Canvas

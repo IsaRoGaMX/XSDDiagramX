@@ -3,7 +3,8 @@
 //    Origen C#: no existe como clase; sustituye a los parámetros `out` de
 //    Diagram.HitTest / DiagramItem.HitTest en Diagram.cs y DiagramItem.cs.
 //
-//    Licencias del original: LGPL / MS-PL. Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
+//    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
 package xsddiagramx.rendering
 
 /**

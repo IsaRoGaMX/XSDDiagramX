@@ -3,7 +3,8 @@
 //    Origen C#: sustituye a System.Drawing.Font y a las propiedades Font/SmallFont/
 //    DocumentationFont de Diagram.cs y DiagramItem.cs.
 //
-//    Licencias del original: LGPL / MS-PL. Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
+//    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
 package xsddiagramx.rendering
 
 /**

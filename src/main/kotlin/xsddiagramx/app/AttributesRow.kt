@@ -2,7 +2,7 @@
 //    AttributesRow.kt: fila de la tabla de atributos del MainForm
 //    (≈ ListViewItem del MainForm.cs con su .Tag en el último campo).
 //
-//    Licencias del original: LGPL (MainForm) / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 package xsddiagramx.app
 
 import xsddiagramx.parsing.XSDAttribute

@@ -2,7 +2,8 @@
 //    DiagramItemType.kt: enum del tipo de icono/caja que representa un nodo del diagrama.
 //    Origen C#: XSDDiagrams\Rendering\DiagramItemType.cs.
 //
-//    Licencias del original: LGPL / MS-PL. Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
+//    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización).
 package xsddiagramx.rendering
 
 /**

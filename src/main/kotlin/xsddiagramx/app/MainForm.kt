@@ -7,7 +7,7 @@
 //        del proyecto C#).
 //      - La carga de esquema es asíncrona (diálogo de progreso + Cancelar).
 //
-//    Licencias del original: LGPL (MainForm) / MS-PL.
+//    Licencia: GNU GPL v2 o posterior (ver LICENSE, en la raiz del repo).
 //    Autores originales: Regis Cosnier (inicial), Paul Selormey (refactorización),
 //    Edu Serna (búsqueda)
 package xsddiagramx.app
@@ -1171,8 +1171,9 @@ class MainForm : BorderPane() {
             title = "About XSDDiagramX"
             headerText = "XSDDiagramX (Kotlin/JavaFX port del C# XSD Diagram)"
             contentText = """
-                Port del XSD Diagram C# (Regis Cosnier, 2006-2011).
-                Licencias del original: LGPL / MS-PL.
+                Port del XSD Diagram C# (Regis Cosnier, 2006-2011),
+                publicado con permiso de su autor.
+                Licencia de este port: GNU GPL v2 o posterior (ver LICENSE).
 
                 Fase 1: capa de dominio (parsing + motor del diagrama).
                 Fase 2: GUI JavaFX (este formulario).
